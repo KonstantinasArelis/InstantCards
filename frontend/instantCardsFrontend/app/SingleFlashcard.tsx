@@ -10,13 +10,24 @@ import {
 
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-
-const onPressQuestion = () => {
-    //alert("test");
-}
+import { useState, useEffect } from 'react';
 
 const SingleFlashcard = (props : any) => {
     const colorScheme = useColorScheme();
+    const [flaschardText, setFlashcardText] = useState(props.flashcardData.question);
+
+    const onPressQuestion = () => {
+        if(flaschardText === props.flashcardData.question){
+            setFlashcardText(props.flashcardData.answer);
+        } else {
+            setFlashcardText(props.flashcardData.question);
+        }
+    }
+
+    useEffect(() => {
+        setFlashcardText(props.flashcardData.question);
+    }, [props.flashcardData])
+
     return (
             <View style={styles.container}>
                 <TouchableHighlight 
@@ -24,7 +35,7 @@ const SingleFlashcard = (props : any) => {
                 underlayColor={Colors[colorScheme ?? 'light'].tint} 
                 style={[styles.questionBox, {backgroundColor: Colors[colorScheme ?? 'light'].background}]}>
 
-                        <Text style={styles.questionText}>Press me, {props.flashcardData.question}</Text>
+                        <Text style={styles.questionText}>{flaschardText}</Text>
                 </TouchableHighlight>
             </View>
     )

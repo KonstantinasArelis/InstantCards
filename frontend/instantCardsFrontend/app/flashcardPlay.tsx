@@ -7,19 +7,26 @@ import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useState } from 'react';
 
-
-var currentFlashcardIndex = 0;
-
 const flashcardPlay = () => {
     const initial = useLocalSearchParams();
     const colorScheme = useColorScheme();
 
     const [currentFlashcard, setCurrentFlashcard] = useState(flashcards[0]);
-
+    const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState(0);
     const onPressNext = () => {
-        currentFlashcardIndex++;
         if(currentFlashcardIndex < flashcards.length){
-            setCurrentFlashcard(flashcards[currentFlashcardIndex]);
+            const newIndex = currentFlashcardIndex + 1;
+            setCurrentFlashcardIndex(newIndex);
+            setCurrentFlashcard(flashcards[newIndex]);
+        }
+
+    }
+
+    const onPressBack = () => {
+        if(currentFlashcardIndex > 0){
+            const newIndex = currentFlashcardIndex - 1;
+            setCurrentFlashcardIndex(newIndex);
+            setCurrentFlashcard(flashcards[newIndex]);
         }
     }
 
@@ -36,7 +43,11 @@ const flashcardPlay = () => {
                     onPress={onPressNext}>
                         <Text style={styles.buttonText}>Next</Text>
                     </TouchableHighlight>
-                    
+                    <TouchableHighlight 
+                    style={[styles.nextButton, {backgroundColor: Colors[colorScheme ?? 'light'].background}]}
+                    onPress={onPressBack}>
+                        <Text style={styles.buttonText}>Back</Text>
+                    </TouchableHighlight>
                 </View>
             </View>
         </View>
