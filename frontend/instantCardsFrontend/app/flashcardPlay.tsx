@@ -14,7 +14,7 @@ const flashcardPlay = () => {
     const [currentFlashcard, setCurrentFlashcard] = useState(flashcards[0]);
     const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState(0);
     const onPressNext = () => {
-        if(currentFlashcardIndex < flashcards.length){
+        if(currentFlashcardIndex < flashcards.length-1){
             const newIndex = currentFlashcardIndex + 1;
             setCurrentFlashcardIndex(newIndex);
             setCurrentFlashcard(flashcards[newIndex]);
