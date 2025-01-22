@@ -5,14 +5,41 @@ import { useLocalSearchParams } from 'expo-router';
 import { flashcardPack } from '@/constants/sampleData';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const flashcardPlay = () => {
-    const initial = useLocalSearchParams();
+    const flashcardPackGUID = useLocalSearchParams< { item: string }>();
     const colorScheme = useColorScheme();
-
-    const [currentFlashcard, setCurrentFlashcard] = useState(flashcardPack.flashcards[0]);
+    const [currentFlashcard, setCurrentFlashcard] = useState(null);
     const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState(0);
+    const [flashcardPack, setFlashcardPack] = useState(null);
+    
+    const getFlashcardpack = async () => {
+
+        try{
+            //console.dir(flashcardPackGUID)
+            //console.log("test" + flashcardPackGUID.item)
+            const jsonValue = await AsyncStorage.getItem(flashcardPackGUID.item)
+            return jsonValue != null ? JSON.parse(jsonValue) : null;
+        } catch(e) {
+
+        }
+    }
+
+    useEffect(() => {
+        getFlashcardpack().then( data => {
+            setFlashcardPack(data);
+            console.dir(data);
+        })
+    }, [])
+
+    useEffect(() => {
+        if(flashcardPack !== null){
+            setCurrentFlashcard(flashcardPack.flashcards[0]);
+        }
+    }, [flashcardPack])
+
     const onPressNext = () => {
         if(currentFlashcardIndex < flashcardPack.flashcards.length-1){
             const newIndex = currentFlashcardIndex + 1;
@@ -28,6 +55,12 @@ const flashcardPlay = () => {
             setCurrentFlashcardIndex(newIndex);
             setCurrentFlashcard(flashcardPack.flashcards[newIndex]);
         }
+    }
+    
+    if(!flashcardPack || !currentFlashcard){
+        return (
+            <Text>Loading...</Text>
+        );
     }
 
     return (
