@@ -2,7 +2,7 @@ import { View, Text , StyleSheet, TouchableHighlight } from 'react-native'
 import { Link, useRouter} from 'expo-router'
 import SingleFlashcard from './SingleFlashcard'
 import { useLocalSearchParams } from 'expo-router';
-import { flashcards } from '@/constants/sampleData';
+import { flashcardPack } from '@/constants/sampleData';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useState } from 'react';
@@ -11,13 +11,13 @@ const flashcardPlay = () => {
     const initial = useLocalSearchParams();
     const colorScheme = useColorScheme();
 
-    const [currentFlashcard, setCurrentFlashcard] = useState(flashcards[0]);
+    const [currentFlashcard, setCurrentFlashcard] = useState(flashcardPack.flashcards[0]);
     const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState(0);
     const onPressNext = () => {
-        if(currentFlashcardIndex < flashcards.length-1){
+        if(currentFlashcardIndex < flashcardPack.flashcards.length-1){
             const newIndex = currentFlashcardIndex + 1;
             setCurrentFlashcardIndex(newIndex);
-            setCurrentFlashcard(flashcards[newIndex]);
+            setCurrentFlashcard(flashcardPack.flashcards[newIndex]);
         }
 
     }
@@ -26,13 +26,13 @@ const flashcardPlay = () => {
         if(currentFlashcardIndex > 0){
             const newIndex = currentFlashcardIndex - 1;
             setCurrentFlashcardIndex(newIndex);
-            setCurrentFlashcard(flashcards[newIndex]);
+            setCurrentFlashcard(flashcardPack.flashcards[newIndex]);
         }
     }
 
     return (
         <View style={styles.container}>
-            <Text style={styles.buttonText}> {currentFlashcardIndex+1} out of {flashcards.length}</Text>
+            <Text style={[styles.buttonText, {backgroundColor: Colors[colorScheme ?? 'light'].background}]}> {currentFlashcardIndex+1} out of {flashcardPack.flashcards.length}</Text>
             <SingleFlashcard flashcardData={currentFlashcard}>
             
             </SingleFlashcard>
@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
         width: 100,
         height: 40,
         margin: 10,
+        borderRadius: 10,
     },
     buttonText: {
         textAlign: 'center',

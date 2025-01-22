@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, Pressable} from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Link } from 'expo-router';
+import { flashcardPack, flashcardPack2, flashcardPack3 } from '@/constants/sampleData';
 
 const flashcards = () => {
     const colorScheme = useColorScheme();
@@ -13,16 +14,16 @@ const flashcards = () => {
             <View style={styles.container}>
             <FlatList
             data={[
-                {key: 'first flashcard'},
-                {key: 'second flaschard'},
-                {key: 'third flashcard'},
+                {key: flashcardPack.GUID},
+                {key: flashcardPack2.GUID},
+                {key: flashcardPack3.GUID},
             ]}
             renderItem={
                 ({item}) => 
 
                 <Link href={{
                     pathname: "/flashcardPlay",
-                    params: { name: item.key }
+                    params: { item: item.key }
                 }}
                 style={{marginHorizontal: 'auto'}}
                 asChild>

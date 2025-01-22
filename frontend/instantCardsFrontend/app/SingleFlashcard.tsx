@@ -48,12 +48,11 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         alignItems: 'center',
-        overflow: 'hidden'
     },
     questionBox: {
         width: '90%',
         height: '20%',
-        borderRadius: '20px',
+        borderRadius: 20,
         padding: 20,
         margin: 10,
     },
@@ -61,7 +60,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 20,
         fontFamily: 'Courier New',
-        overflow: 'hidden'
     },
     answer: {
         width: '80%',
