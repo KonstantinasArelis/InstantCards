@@ -11,22 +11,23 @@ import {
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useState, useEffect } from 'react';
+import { SingleFlashcardProps } from '@/types/custom';
 
-const SingleFlashcard = (props : any) => {
+const SingleFlashcard = (props : SingleFlashcardProps) => {
     const colorScheme = useColorScheme();
-    const [flaschardText, setFlashcardText] = useState(props.flashcardData.question);
+    const [flaschardText, setFlashcardText] = useState(props.flashcard.question);
 
     const onPressQuestion = () => {
-        if(flaschardText === props.flashcardData.question){
-            setFlashcardText(props.flashcardData.answer);
+        if(flaschardText === props.flashcard.question){
+            setFlashcardText(props.flashcard.answer);
         } else {
-            setFlashcardText(props.flashcardData.question);
+            setFlashcardText(props.flashcard.question);
         }
     }
 
     useEffect(() => {
-        setFlashcardText(props.flashcardData.question);
-    }, [props.flashcardData])
+        setFlashcardText(props.flashcard.question);
+    }, [props.flashcard])
 
     return (
             <View style={styles.container}>

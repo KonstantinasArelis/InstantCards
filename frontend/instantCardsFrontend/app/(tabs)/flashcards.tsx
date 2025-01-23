@@ -6,29 +6,27 @@ import { Link } from 'expo-router';
 import { flashcardPack, flashcardPack2, flashcardPack3 } from '@/constants/sampleData';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useEffect, useState } from 'react';
+import { FlashcardPackGUIDList } from '@/types/custom';
 
 const flashcards = () => {
     const colorScheme = useColorScheme();
     const color = colorScheme === 'light' ? 'black' : 'white';
+    const [flashcardPackGUIDList, setFlashcardPackGUIDList] = useState<FlashcardPackGUIDList | null>(null);
 
-    const [myData, setMyData] = useState(null);
-    const [flashcardPackGUIDList, setFlashcardPackGUIDList] = useState(null);
-
-    const flashcardPackGUIDListJson = 
-        [
-            {
-                "GUID": "4549f3bb-5133-4d6f-aeee-b38c2f9eaf74",
-                "name" : "Basic flashcards"
-            },
-            {
-                "GUID": "e089bd7a-629f-498c-b41f-904f85b13993",
-                "name": "Math flashcards"
-            },
-            {
-                "GUID": "89a7f486-c847-433d-a094-49f60919111f",
-                "name": "Coding flashcards"
-            },
-        ]
+    const flashcardPackGUIDListJson: FlashcardPackGUIDList = [
+        {
+            "GUID": "4549f3bb-5133-4d6f-aeee-b38c2f9eaf74",
+            "name" : "Basic flashcards"
+        },
+        {
+            "GUID": "e089bd7a-629f-498c-b41f-904f85b13993",
+            "name": "Math flashcards"
+        },
+        {
+            "GUID": "89a7f486-c847-433d-a094-49f60919111f",
+            "name": "Coding flashcards"
+        },
+    ]
 
     const storeData = async (key : any, value : any) => {
         try {
@@ -40,12 +38,13 @@ const flashcards = () => {
     };
     //storeData("flashcardPackGUIDList", flashcardPackGUIDListJson);
 
-    const getFlashcardGUIDList = async () => {
+    const getFlashcardGUIDList = async () : Promise<FlashcardPackGUIDList> => {
         try {
           const jsonValue = await AsyncStorage.getItem("flashcardPackGUIDList");
           return jsonValue != null ? JSON.parse(jsonValue) : null;
         } catch (e) {
-          // error reading value
+            console.error("The retrieved GUID List is empty");
+          return [];
         }
     };
 
@@ -55,12 +54,6 @@ const flashcards = () => {
             setFlashcardPackGUIDList(list);
         })
     }, [])
-
-    useEffect(() => {
-        console.log('myData: ');
-        console.dir(myData);
-    }, [myData])
-
 
     if (!flashcardPackGUIDList) { 
         return <Text>Loading...</Text>;
@@ -75,7 +68,7 @@ const flashcards = () => {
 
                 <Link href={{
                     pathname: "/flashcardPlay",
-                    params: { item: item.GUID }
+                    params: { GUID: item.GUID}
                 }}
                 style={{marginHorizontal: 'auto'}}
                 asChild>

@@ -7,33 +7,22 @@ import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { Flashcard, FlashcardPack, FlashcardPackGUID, FlashcardPackGUIDFromRoute } from '@/types/custom';
+import useFetchLocalFlashcardPack from "../hooks/useFetchLocalFlashcardPack";
 
 const flashcardPlay = () => {
-    const flashcardPackGUID = useLocalSearchParams< { item: string }>();
+    const flashcardPackGUID = useLocalSearchParams< any>();
     const colorScheme = useColorScheme();
-    const [currentFlashcard, setCurrentFlashcard] = useState(null);
+    const [currentFlashcard, setCurrentFlashcard] = useState<Flashcard | null>(null);
     const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState(0);
-    const [flashcardPack, setFlashcardPack] = useState(null);
-    
-    const getFlashcardpack = async () => {
-
-        try{
-            //console.dir(flashcardPackGUID)
-            //console.log("test" + flashcardPackGUID.item)
-            const jsonValue = await AsyncStorage.getItem(flashcardPackGUID.item)
-            return jsonValue != null ? JSON.parse(jsonValue) : null;
-        } catch(e) {
-
-        }
-    }
+    const [flashcardPack, setFlashcardPack] = useState<FlashcardPack | null>(null);
 
     useEffect(() => {
-        getFlashcardpack().then( data => {
-            setFlashcardPack(data);
-            console.dir(data);
+        useFetchLocalFlashcardPack(flashcardPackGUID).then( result => {
+            setFlashcardPack(result);
         })
-    }, [])
-
+    },[])
+        
     useEffect(() => {
         if(flashcardPack !== null){
             setCurrentFlashcard(flashcardPack.flashcards[0]);
@@ -41,15 +30,22 @@ const flashcardPlay = () => {
     }, [flashcardPack])
 
     const onPressNext = () => {
+        if(!flashcardPack){
+            return;
+        }
+        
         if(currentFlashcardIndex < flashcardPack.flashcards.length-1){
             const newIndex = currentFlashcardIndex + 1;
             setCurrentFlashcardIndex(newIndex);
             setCurrentFlashcard(flashcardPack.flashcards[newIndex]);
         }
-
     }
 
     const onPressBack = () => {
+        if(!flashcardPack){
+            return;
+        }
+
         if(currentFlashcardIndex > 0){
             const newIndex = currentFlashcardIndex - 1;
             setCurrentFlashcardIndex(newIndex);
@@ -66,7 +62,7 @@ const flashcardPlay = () => {
     return (
         <View style={styles.container}>
             <Text style={[styles.buttonText, {backgroundColor: Colors[colorScheme ?? 'light'].background}]}> {currentFlashcardIndex+1} out of {flashcardPack.flashcards.length}</Text>
-            <SingleFlashcard flashcardData={currentFlashcard}>
+            <SingleFlashcard flashcard={currentFlashcard}>
             
             </SingleFlashcard>
             <View style={styles.controls}>
