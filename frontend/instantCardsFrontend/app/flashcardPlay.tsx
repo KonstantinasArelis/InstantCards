@@ -9,6 +9,8 @@ import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Flashcard, FlashcardPack, FlashcardPackGUID, FlashcardPackGUIDFromRoute } from '@/types/custom';
 import useFetchLocalFlashcardPack from "../hooks/useFetchLocalFlashcardPack";
+import NextFlashcardButton from './NextFlashcardButton';
+import PreviousFlashcardButton from './PreviousFlashcardButton';
 
 const flashcardPlay = () => {
     const flashcardPackGUID = useLocalSearchParams< any>();
@@ -41,7 +43,7 @@ const flashcardPlay = () => {
         }
     }
 
-    const onPressBack = () => {
+    const onPressPrevious = () => {
         if(!flashcardPack){
             return;
         }
@@ -67,16 +69,9 @@ const flashcardPlay = () => {
             </SingleFlashcard>
             <View style={styles.controls}>
                 <View style={styles.buttons}>
-                    <TouchableHighlight 
-                    style={[styles.nextButton, {backgroundColor: Colors[colorScheme ?? 'light'].background}]}
-                    onPress={onPressNext}>
-                        <Text style={styles.buttonText}>Next</Text>
-                    </TouchableHighlight>
-                    <TouchableHighlight 
-                    style={[styles.nextButton, {backgroundColor: Colors[colorScheme ?? 'light'].background}]}
-                    onPress={onPressBack}>
-                        <Text style={styles.buttonText}>Back</Text>
-                    </TouchableHighlight>
+                    <PreviousFlashcardButton handlePrevious={onPressPrevious}></PreviousFlashcardButton>
+                    <NextFlashcardButton handleNext={onPressNext}></NextFlashcardButton>
+                    
                 </View>
             </View>
         </View>
