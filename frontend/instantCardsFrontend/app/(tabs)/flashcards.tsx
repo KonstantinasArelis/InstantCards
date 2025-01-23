@@ -65,17 +65,29 @@ const flashcards = () => {
             data={flashcardPackGUIDListJson}
             renderItem={
                 ({item}) => 
+                    <View>
+                       <Link href={{
+                            pathname: "/flashcardPlay",
+                            params: { GUID: item.GUID}
+                        }}
+                        style={{marginHorizontal: 'auto'}}
+                        asChild>
+                            <Pressable>
+                                <Text style={[styles.item, {color: color}]}>{item.name}</Text>
+                            </Pressable>
+                        </Link> 
 
-                <Link href={{
-                    pathname: "/flashcardPlay",
-                    params: { GUID: item.GUID}
-                }}
-                style={{marginHorizontal: 'auto'}}
-                asChild>
-                    <Pressable>
-                        <Text style={[styles.item, {color: color}]}>{item.name}</Text>
-                    </Pressable>
-                </Link>
+                        <Link href={{
+                            pathname: "/editFlashcardPack",
+                            params: { GUID: item.GUID}
+                        }}
+                        style={{marginHorizontal: 'auto'}}
+                        asChild>
+                            <Pressable>
+                                <Text style={[styles.item, {color: color}]}>Edit</Text>
+                            </Pressable>
+                        </Link> 
+                    </View>
             }
             >
             </FlatList>
