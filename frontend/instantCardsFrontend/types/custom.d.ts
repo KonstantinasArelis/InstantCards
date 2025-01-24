@@ -3,23 +3,30 @@ declare module "*.png" {
     export default value;
 }
 
+export type FlashcardGuid = string;
+
+export type FlashcardGuidList = FlashcardGuid[];
+
 export interface Flashcard {
+    GUID: FlashcardGuid;
     question: string;
     answer: string;
 }
 
 export interface FlashcardPack {
-    name: string;
     GUID: string;
+    name: string;
     flashcards: Flashcard[]
 }
 
-export interface FlashcardPackGUID{
-    GUID: string;
+export type FlashcardPackGUID = string;
+
+export interface FlashcardPackBasicInfo {
+    GUID: FlashcardPackGUID;
     name: string;
 }
 
-export type  FlashcardPackGUIDList = FlashcardPackGUID[];
+export type  FlashcardPackBasicInfoList = FlashcardPackBasicInfo[];
 
 interface SingleFlashcardProps {
     flashcard: Flashcard;

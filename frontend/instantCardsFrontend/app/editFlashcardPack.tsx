@@ -6,16 +6,24 @@ import SingleFlashcard from './SingleFlashcard';
 import { View, Text , StyleSheet, TouchableHighlight } from 'react-native'
 import NextFlashcardButton from './NextFlashcardButton';
 import PreviousFlashcardButton from './PreviousFlashcardButton';
-
+import SingleEditableFlashcard from './SingleEditableFlashcard';
 const editFlashcardPack = () => {
     const flashcardPackGUID = useLocalSearchParams<any>();
     const [flashcardPack, setFlashcardPack] = useState<FlashcardPack | null>(null);
     const [currentFlashcard, setCurrentFlashcard] = useState<Flashcard | null>(null);
     const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState(0);
 
+    const isFlashcardPack = (data: FlashcardPack | Error) => {
+        return !(data instanceof Error)
+    }
+
     useEffect(() => {
         useFetchLocalFlashcardPack(flashcardPackGUID).then((result) => {
-            setFlashcardPack(result);
+            if(isFlashcardPack(result)){
+                setFlashcardPack(result);
+            } else {
+                console.error("error has occured");
+            }
         })
     }, [])
 
@@ -61,7 +69,7 @@ const editFlashcardPack = () => {
 
     return(
         <View style={styles.container}>
-            <SingleFlashcard flashcard={currentFlashcard}></SingleFlashcard>
+            <SingleEditableFlashcard flashcard={currentFlashcard}></SingleEditableFlashcard>
             <View style={styles.controls}>
                 <View style={styles.buttons}>
                     <PreviousFlashcardButton handlePrevious={onPressPrevious}></PreviousFlashcardButton>

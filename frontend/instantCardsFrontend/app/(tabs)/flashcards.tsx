@@ -1,68 +1,74 @@
 import { View, Text, StyleSheet, FlatList, Pressable} from 'react-native';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { ScrollView } from 'react-native-gesture-handler';
 import { Link } from 'expo-router';
-import { flashcardPack, flashcardPack2, flashcardPack3 } from '@/constants/sampleData';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useEffect, useState } from 'react';
-import { FlashcardPackGUIDList } from '@/types/custom';
+import { Flashcard, FlashcardPack, FlashcardPackBasicInfoList } from '@/types/custom';
+import useFetchLocalFlashcardPackBasicInfoList from '@/hooks/useFetchLocalFlashcardPackBasicInfoList';
+import useSaveLocalFlashcardPack from '@/hooks/useSaveLocalFlashcardPack';
+import useSaveLocalFlashcardPackBasicInfoList from '@/hooks/useSaveLocalFlashcardPackBasicInfoList';
 
 const flashcards = () => {
     const colorScheme = useColorScheme();
     const color = colorScheme === 'light' ? 'black' : 'white';
-    const [flashcardPackGUIDList, setFlashcardPackGUIDList] = useState<FlashcardPackGUIDList | null>(null);
+    const [flashcardPackBasicInfoList, setFlashcardPackBasicInfoList] = useState<FlashcardPackBasicInfoList | null>(null);
+    const [error, setError] = useState <Error | null>(null);
 
-    const flashcardPackGUIDListJson: FlashcardPackGUIDList = [
-        {
-            "GUID": "4549f3bb-5133-4d6f-aeee-b38c2f9eaf74",
-            "name" : "Basic flashcards"
-        },
-        {
-            "GUID": "e089bd7a-629f-498c-b41f-904f85b13993",
-            "name": "Math flashcards"
-        },
-        {
-            "GUID": "89a7f486-c847-433d-a094-49f60919111f",
-            "name": "Coding flashcards"
-        },
-    ]
-
-    const storeData = async (key : any, value : any) => {
-        try {
-            const jsonValue = JSON.stringify(value);
-            await AsyncStorage.setItem(key, jsonValue);
-        } catch (e) {
-            // saving error
-        }
+    const isFlashcardPackBasicInfoList = (data: FlashcardPackBasicInfoList | Error) => {
+        return !(data instanceof Error)
+    }
+    const sampleFlashcard: Flashcard = {
+        GUID: "123e4567-e89b-12d3-a456-426614174000",
+        question: "What is the capital of France?",
+        answer: "Paris"
     };
-    //storeData("flashcardPackGUIDList", flashcardPackGUIDListJson);
-
-    const getFlashcardGUIDList = async () : Promise<FlashcardPackGUIDList> => {
-        try {
-          const jsonValue = await AsyncStorage.getItem("flashcardPackGUIDList");
-          return jsonValue != null ? JSON.parse(jsonValue) : null;
-        } catch (e) {
-            console.error("The retrieved GUID List is empty");
-          return [];
-        }
+    
+    const sampleFlashcard2: Flashcard = {
+        GUID: "123e4567-e89b-12d3-a456-426614174001",
+        question: "What is the highest mountain in the world?",
+        answer: "Mount Everest"
     };
+    
+    const sampleFlashcardPack: FlashcardPack = {
+        GUID: "890c1234-d56e-789f-a12b-345678901000",
+        name: "Geography Quiz",
+        flashcards: [sampleFlashcard, sampleFlashcard2]
+    };
+
+    const sampleFlashcardPackBasicInfoList: FlashcardPackBasicInfoList = [
+        {
+            GUID: "890c1234-d56e-789f-a12b-345678901000",
+            name: "History Facts"
+        }
+    ];
 
     useEffect(() => {
-        //storeData("testdata");
-        getFlashcardGUIDList().then(list => {
-            setFlashcardPackGUIDList(list);
+        
+        // useSaveLocalFlashcardPack(sampleFlashcardPack).then((result) => {
+        //     console.log(result);
+        // })
+
+        useSaveLocalFlashcardPackBasicInfoList(sampleFlashcardPackBasicInfoList);
+
+        useFetchLocalFlashcardPackBasicInfoList().then((result) => {
+            if(isFlashcardPackBasicInfoList(result)){
+                setFlashcardPackBasicInfoList(result);
+            } else {
+                console.error("error has occured");
+            }
+            
         })
     }, [])
 
-    if (!flashcardPackGUIDList) { 
+    if (!flashcardPackBasicInfoList) { 
         return <Text>Loading...</Text>;
     }
 
     return (
             <View style={styles.container}>
             <FlatList
-            data={flashcardPackGUIDListJson}
+            data={flashcardPackBasicInfoList}
             renderItem={
                 ({item}) => 
                     <View>

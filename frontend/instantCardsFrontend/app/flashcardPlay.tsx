@@ -19,9 +19,17 @@ const flashcardPlay = () => {
     const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState(0);
     const [flashcardPack, setFlashcardPack] = useState<FlashcardPack | null>(null);
 
+    const isFlashcardPack = (data: FlashcardPack | Error) => {
+        return !(data instanceof Error)
+    }
+
     useEffect(() => {
-        useFetchLocalFlashcardPack(flashcardPackGUID).then( result => {
-            setFlashcardPack(result);
+        useFetchLocalFlashcardPack(flashcardPackGUID.GUID).then( result => {
+            if(isFlashcardPack(result)){
+                setFlashcardPack(result);
+            } else {
+                console.error("error has occured: " + result);
+            }
         })
     },[])
         
