@@ -13,7 +13,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { useState, useEffect } from 'react';
 import { SingleFlashcardProps } from '@/types/custom';
 
-const SingleEditableFlashcard = (props : SingleFlashcardProps) => {
+const SingleEditableFlashcard = (props : SingleFlashcardProps, setCurrentFlashcard) => {
     const colorScheme = useColorScheme();
     const [flaschardQuestionText, setFlashcardQuestionText] = useState(props.flashcard.question);
     const [flaschardAnswerText, setFlaschardAnswerText] = useState(props.flashcard.answer);
@@ -22,6 +22,14 @@ const SingleEditableFlashcard = (props : SingleFlashcardProps) => {
         setFlashcardQuestionText(props.flashcard.question);
         setFlaschardAnswerText(props.flashcard.answer);
     }, [props.flashcard])
+
+    useEffect(() => {
+        props.setCurrentFlashcard(prevState => ({
+            ...prevState,
+            question: flaschardQuestionText,
+            answer: flaschardAnswerText
+        }));
+    }, [flaschardQuestionText, flaschardAnswerText])
 
     return (
             <View style={styles.container}>
