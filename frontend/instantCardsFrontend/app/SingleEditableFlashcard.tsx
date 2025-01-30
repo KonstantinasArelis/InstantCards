@@ -1,4 +1,4 @@
-import { View, Text , StyleSheet, TextInput } from 'react-native'
+import { View, Text , StyleSheet, TextInput, useWindowDimensions } from 'react-native'
 import {
     Alert,
     Platform,
@@ -13,73 +13,109 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { useState, useEffect } from 'react';
 import { SingleFlashcardProps } from '@/types/custom';
 
-const SingleEditableFlashcard = (props : SingleFlashcardProps, setCurrentFlashcard) => {
+
+
+const SingleEditableFlashcard = (props : SingleFlashcardProps) => {
     const colorScheme = useColorScheme();
+    const { height } = useWindowDimensions();
     const [flaschardQuestionText, setFlashcardQuestionText] = useState(props.flashcard.question);
     const [flaschardAnswerText, setFlaschardAnswerText] = useState(props.flashcard.answer);
+    const [isFocused, setIsFocused] = useState(false);
 
     useEffect(() => {
         setFlashcardQuestionText(props.flashcard.question);
         setFlaschardAnswerText(props.flashcard.answer);
     }, [props.flashcard])
 
+
+
     useEffect(() => {
-        props.setCurrentFlashcard(prevState => ({
-            ...prevState,
+        props.handleFlashcardUpdate({
+            GUID: props.flashcard.GUID,
             question: flaschardQuestionText,
             answer: flaschardAnswerText
-        }));
+        });
     }, [flaschardQuestionText, flaschardAnswerText])
 
-    return (
-            <View style={styles.container}>
-                <TextInput
-                style={styles.questionBox}
-                onChangeText={setFlashcardQuestionText}
-                value={flaschardQuestionText}
-                >
-                </TextInput>
+    if(props.flashcard.GUID !== 0) {
+        return (
+            <View style={[styles.container, {height}]}>
+                <View style={styles.questionBox}>
+                
 
-                <TextInput
-                style={styles.answerBox}
-                onChangeText={setFlaschardAnswerText}
-                value={flaschardAnswerText}
-                >
-                </TextInput>
+                    <Text style={styles.anotationText}>Question</Text>
+                    <TextInput
+                    
+                    style={styles.flashcardText}
+                    onChangeText={setFlashcardQuestionText}
+                    value={flaschardQuestionText}
+                    >
+                    </TextInput>
+                </View>
+                
+                <View style={styles.answerBox}>
+                    <Text style={styles.anotationText}>Answer</Text>
+                    <TextInput
+                    style={styles.flashcardText}
+                    onChangeText={setFlaschardAnswerText}
+                    value={flaschardAnswerText}
+                    >
+                    </TextInput>
+                </View>
+                
             </View>
-    )
+        )
+    } else {
+        return(
+           <View style={[styles.container, {height}]}>
+                <View style={styles.endFlashcard}></View>
+            </View> 
+        )
+        
+    }
+
+    
 }
 
 const styles = StyleSheet.create({
     container: {
-        width: '100%',
-        height: '100%',
         flex: 1,
         flexDirection: 'column',
         alignItems: 'center',
     },
     questionBox: {
-        width: '90%',
-        height: '20%',
+        flex: 0.45,
         borderRadius: 20,
         padding: 20,
         margin: 10,
-        textAlign: 'center',
-        fontSize: 20,
-        fontFamily: 'Courier New',
         backgroundColor: 'orange',
     },
     answerBox: {
-        width: '90%',
-        height: '20%',
+        flex: 0.45,
         borderRadius: 20,
         padding: 20,
         margin: 10,
+        backgroundColor: 'orange',
+    },
+    endFlashcard: {
+        flex: 0.9,
+        borderRadius: 20,
+        padding: 20,
+        margin: 10,
+        backgroundColor: 'orange',
+    },
+    flashcardText: {
+        outlineStyle: 'none',
+        height: '100%',
         textAlign: 'center',
         fontSize: 20,
         fontFamily: 'Courier New',
-        backgroundColor: 'orange',
     },
+    anotationText: {
+        textAlign: 'center',
+        fontSize: 10,
+        fontFamily: 'Courier New',
+    }
 })
 
 export default SingleEditableFlashcard;

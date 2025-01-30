@@ -8,6 +8,7 @@ import NextFlashcardButton from './NextFlashcardButton';
 import PreviousFlashcardButton from './PreviousFlashcardButton';
 import SingleEditableFlashcard from './SingleEditableFlashcard';
 import useSaveLocalFlashcardPack from '@/hooks/useSaveLocalFlashcardPack';
+import { FlatList } from 'react-native-gesture-handler';
 
 const editFlashcardPack = () => {
     const flashcardPackGUID = useLocalSearchParams<any>();
@@ -22,6 +23,8 @@ const editFlashcardPack = () => {
     useEffect(() => {
         useFetchLocalFlashcardPack(flashcardPackGUID.GUID).then((result) => {
             if(isFlashcardPack(result)){
+                const endFlashcard : Flashcard = {GUID: 0, question: 'add a question', answer: 'add an answer'};
+                result.flashcards.push(endFlashcard);
                 setFlashcardPack(result);
             } else {
                 console.error("error has occured");
@@ -53,26 +56,21 @@ const editFlashcardPack = () => {
         }
     }
     
-    const handleQuestionChange = (text) => {
+    const handleFlashcardUpdate = (updatedFlashcard) => {
         setFlashcardPack(prevFlashcardPack => ({
-        ...prevFlashcardPack,
-          flashcards: prevFlashcardPack.flashcards.map((flashcard, index) => 
-            index === currentFlashcardIndex? {...flashcard, question: text }: flashcard
-          )
-        }));
-      }
-      
-      const handleAnswerChange = (text) => {
-        setFlashcardPack(prevFlashcardPack => ({
-        ...prevFlashcardPack,
-          flashcards: prevFlashcardPack.flashcards.map((flashcard, index) => 
-            index === currentFlashcardIndex? {...flashcard, answer: text }: flashcard
-          )
-        }));
-      }
+            ...prevFlashcardPack,
+              flashcards: prevFlashcardPack.flashcards.map((flashcard, index) => {
+                if (flashcard.GUID === updatedFlashcard.GUID) {
+                    return {...flashcard, question: updatedFlashcard.question, answer: updatedFlashcard.answer };
+                } else {
+                    return flashcard;
+                }
+              })
+            }));
+    }
 
     useEffect(() => {
-        useSaveLocalFlashcardPack(flashcardPack);
+        useSaveLocalFlashcardPack(flashcardPack?.flashcards.filter(flashcard => flashcard.GUID !== 0));
     }, [flashcardPack])
 
     if(!flashcardPack){
@@ -86,30 +84,25 @@ const editFlashcardPack = () => {
 
     return(
         <View style={styles.container}>
-            {/* <SingleEditableFlashcard flashcard={currentFlashcard} setCurrentFlashcard={setCurrentFlashcard}></SingleEditableFlashcard> */}
+             {/* <SingleEditableFlashcard flashcard={flashcardPack.flashcards[currentFlashcardIndex]} handleFlashcardUpdate={handleFlashcardUpdate}></SingleEditableFlashcard> */}
 
-            <View style={styles.editingContainer}>
-                            <TextInput
-                            style={styles.questionBox}
-                            onChangeText={handleQuestionChange}
-                            value={flashcardPack.flashcards[currentFlashcardIndex].question}
-                            >
-                            </TextInput>
-            
-                            <TextInput
-                            style={styles.answerBox}
-                            onChangeText={handleAnswerChange}
-                            value={flashcardPack.flashcards[currentFlashcardIndex].answer}
-                            >
-                            </TextInput>
-                        </View>
-                        
-            <View style={styles.controls}>
+            <FlatList 
+            style={styles.slidingContainer}
+            data={flashcardPack.flashcards}
+            renderItem={({ item }) => <SingleEditableFlashcard flashcard={item} handleFlashcardUpdate={handleFlashcardUpdate}/>}
+            horizontal
+            showsHorizontalScrollIndicator
+            pagingEnabled
+            >
+            </FlatList>
+
+
+            {/* <View style={styles.controls}>
                 <View style={styles.buttons}>
                     <PreviousFlashcardButton handlePrevious={onPressPrevious}></PreviousFlashcardButton>
                     <NextFlashcardButton handleNext={onPressNext} ></NextFlashcardButton>
                 </View>
-            </View>
+            </View> */}
         </View>
     )
 
@@ -139,35 +132,9 @@ const styles = StyleSheet.create({
     buttonText: {
         textAlign: 'center',
     },
-    editingContainer: {
-        width: '100%',
-        height: '100%',
-        flex: 1,
-        flexDirection: 'column',
-        alignItems: 'center',
-    },
-    questionBox: {
-        width: '90%',
-        height: '20%',
-        borderRadius: 20,
-        padding: 20,
-        margin: 10,
-        textAlign: 'center',
-        fontSize: 20,
-        fontFamily: 'Courier New',
-        backgroundColor: 'orange',
-    },
-    answerBox: {
-        width: '90%',
-        height: '20%',
-        borderRadius: 20,
-        padding: 20,
-        margin: 10,
-        textAlign: 'center',
-        fontSize: 20,
-        fontFamily: 'Courier New',
-        backgroundColor: 'orange',
-    },
+    slidingContainer: {
+        
+    }
 })
 
 export default editFlashcardPack;
