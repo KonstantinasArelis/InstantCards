@@ -85,6 +85,14 @@ const editFlashcardPack = () => {
           });
     }
 
+    const handleDeleteFlashcard = (flashcardGUID) => {
+        setFlashcardPack(prevFlashcardPack => {
+            let updatedFlashcardPack = JSON.parse(JSON.stringify(prevFlashcardPack)); 
+            updatedFlashcardPack.flashcards = updatedFlashcardPack.flashcards.filter(flashcard => flashcard.GUID !== flashcardGUID)
+            return updatedFlashcardPack; 
+        });
+    }
+
     useEffect(() => {
         if(flashcardPack!== null){
             const toSaveFlashcardPack = JSON.parse(JSON.stringify(flashcardPack));
@@ -106,11 +114,11 @@ const editFlashcardPack = () => {
     return(
         <View style={styles.container}>
              {/* <SingleEditableFlashcard flashcard={flashcardPack.flashcards[currentFlashcardIndex]} handleFlashcardUpdate={handleFlashcardUpdate}></SingleEditableFlashcard> */}
-            
+
             <FlatList 
             style={styles.slidingContainer}
             data={flashcardPack.flashcards}
-            renderItem={({ item }) => <SingleEditableFlashcard flashcard={item} handleFlashcardUpdate={handleFlashcardUpdate} handleAddFlashcard={handleAddFlashcard}/>}
+            renderItem={({ item }) => <SingleEditableFlashcard flashcard={item} handleFlashcardUpdate={handleFlashcardUpdate} handleAddFlashcard={handleAddFlashcard} handleDeleteFlashcard={handleDeleteFlashcard}/>}
             horizontal
             showsHorizontalScrollIndicator
             pagingEnabled

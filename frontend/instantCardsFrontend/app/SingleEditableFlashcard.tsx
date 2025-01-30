@@ -13,7 +13,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { useState, useEffect } from 'react';
 import { Flashcard, SingleFlashcardProps } from '@/types/custom';
 import GrayedOutOverlay from './GrayedOutOverlay';
-
+import AntDesign from '@expo/vector-icons/AntDesign';
 const SingleEditableFlashcard = (props : SingleFlashcardProps) => {
     const colorScheme = useColorScheme();
     const { height } = useWindowDimensions();
@@ -40,9 +40,10 @@ const SingleEditableFlashcard = (props : SingleFlashcardProps) => {
 
     return (
         <View style={[styles.container, {height}]}>
-                <GrayedOutOverlay visible={isEndFlashcard} handleAddFlashcard={props.handleAddFlashcard}>
+            <GrayedOutOverlay visible={isEndFlashcard} handleAddFlashcard={props.handleAddFlashcard}></GrayedOutOverlay>
 
-                </GrayedOutOverlay>
+
+
             <View style={styles.questionBox}>
             
 
@@ -65,6 +66,11 @@ const SingleEditableFlashcard = (props : SingleFlashcardProps) => {
                 >
                 </TextInput>
             </View>
+            <TouchableHighlight
+            onPress={() => props.handleDeleteFlashcard(props.flashcard.GUID)}
+            >
+                <AntDesign name="delete" size={24} color="black" />
+            </TouchableHighlight>
             
         </View>
     )
