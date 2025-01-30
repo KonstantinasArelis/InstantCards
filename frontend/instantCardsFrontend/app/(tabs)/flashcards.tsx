@@ -9,47 +9,25 @@ import useFetchLocalFlashcardPackBasicInfoList from '@/hooks/useFetchLocalFlashc
 import useSaveLocalFlashcardPack from '@/hooks/useSaveLocalFlashcardPack';
 import useSaveLocalFlashcardPackBasicInfoList from '@/hooks/useSaveLocalFlashcardPackBasicInfoList';
 
+import { useNavigation } from 'expo-router';
+
+
 const flashcards = () => {
     const colorScheme = useColorScheme();
     const color = colorScheme === 'light' ? 'black' : 'white';
     const [flashcardPackBasicInfoList, setFlashcardPackBasicInfoList] = useState<FlashcardPackBasicInfoList | null>(null);
     const [error, setError] = useState <Error | null>(null);
+    const navigation = useNavigation();
+
+ 
 
     const isFlashcardPackBasicInfoList = (data: FlashcardPackBasicInfoList | Error) => {
         return !(data instanceof Error)
     }
-    const sampleFlashcard: Flashcard = {
-        GUID: "123e4567-e89b-12d3-a456-426614174000",
-        question: "What is the capital of France?",
-        answer: "Paris"
-    };
-    
-    const sampleFlashcard2: Flashcard = {
-        GUID: "123e4567-e89b-12d3-a456-426614174001",
-        question: "What is the highest mountain in the world?",
-        answer: "Mount Everest"
-    };
-    
-    const sampleFlashcardPack: FlashcardPack = {
-        GUID: "890c1234-d56e-789f-a12b-345678901000",
-        name: "Geography Quiz",
-        flashcards: [sampleFlashcard, sampleFlashcard2]
-    };
-
-    const sampleFlashcardPackBasicInfoList: FlashcardPackBasicInfoList = [
-        {
-            GUID: "890c1234-d56e-789f-a12b-345678901000",
-            name: "History Facts"
-        }
-    ];
 
     useEffect(() => {
-        
-        // useSaveLocalFlashcardPack(sampleFlashcardPack).then((result) => {
-        //     console.log(result);
-        // })
-
-        useSaveLocalFlashcardPackBasicInfoList(sampleFlashcardPackBasicInfoList);
+    
+        //useSaveLocalFlashcardPackBasicInfoList(sampleFlashcardPackBasicInfoList);
 
         useFetchLocalFlashcardPackBasicInfoList().then((result) => {
             if(isFlashcardPackBasicInfoList(result)){
@@ -74,7 +52,7 @@ const flashcards = () => {
                     <View>
                        <Link href={{
                             pathname: "/flashcardPlay",
-                            params: { GUID: item.GUID}
+                            params: { GUID: item.GUID},
                         }}
                         style={{marginHorizontal: 'auto'}}
                         asChild>
@@ -85,7 +63,7 @@ const flashcards = () => {
 
                         <Link href={{
                             pathname: "/editFlashcardPack",
-                            params: { GUID: item.GUID}
+                            params: { GUID: item.GUID},
                         }}
                         style={{marginHorizontal: 'auto'}}
                         asChild>

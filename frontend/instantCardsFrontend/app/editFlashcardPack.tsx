@@ -9,6 +9,7 @@ import PreviousFlashcardButton from './PreviousFlashcardButton';
 import SingleEditableFlashcard from './SingleEditableFlashcard';
 import useSaveLocalFlashcardPack from '@/hooks/useSaveLocalFlashcardPack';
 import { FlatList } from 'react-native-gesture-handler';
+const { v4: uuidv4 } = require('uuid');
 
 const editFlashcardPack = () => {
     const flashcardPackGUID = useLocalSearchParams<any>();
@@ -69,8 +70,28 @@ const editFlashcardPack = () => {
             }));
     }
 
+    const handleAddFlashcard = () => {
+        const newFlashcard : Flashcard= {
+            GUID: uuidv4(),
+            question: 'Add a question',
+            answer: 'Add an answer'
+        };
+        console.log(newFlashcard);
+        setFlashcardPack(prevFlashcardPack => {
+            const updatedFlashcardPack = JSON.parse(JSON.stringify(prevFlashcardPack)); 
+        
+            updatedFlashcardPack.flashcards.splice(updatedFlashcardPack.flashcards.length - 1, 0, newFlashcard);
+            return updatedFlashcardPack; 
+          });
+    }
+
     useEffect(() => {
-        useSaveLocalFlashcardPack(flashcardPack?.flashcards.filter(flashcard => flashcard.GUID !== 0));
+        if(flashcardPack!== null){
+            const toSaveFlashcardPack = JSON.parse(JSON.stringify(flashcardPack));
+            toSaveFlashcardPack.flashcards = toSaveFlashcardPack.flashcards.filter(flashcard => flashcard.GUID !== 0);
+        useSaveLocalFlashcardPack(toSaveFlashcardPack);
+        }
+        
     }, [flashcardPack])
 
     if(!flashcardPack){
@@ -85,11 +106,11 @@ const editFlashcardPack = () => {
     return(
         <View style={styles.container}>
              {/* <SingleEditableFlashcard flashcard={flashcardPack.flashcards[currentFlashcardIndex]} handleFlashcardUpdate={handleFlashcardUpdate}></SingleEditableFlashcard> */}
-
+            
             <FlatList 
             style={styles.slidingContainer}
             data={flashcardPack.flashcards}
-            renderItem={({ item }) => <SingleEditableFlashcard flashcard={item} handleFlashcardUpdate={handleFlashcardUpdate}/>}
+            renderItem={({ item }) => <SingleEditableFlashcard flashcard={item} handleFlashcardUpdate={handleFlashcardUpdate} handleAddFlashcard={handleAddFlashcard}/>}
             horizontal
             showsHorizontalScrollIndicator
             pagingEnabled

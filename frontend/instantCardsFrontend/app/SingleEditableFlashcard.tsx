@@ -11,23 +11,22 @@ import {
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useState, useEffect } from 'react';
-import { SingleFlashcardProps } from '@/types/custom';
-
-
+import { Flashcard, SingleFlashcardProps } from '@/types/custom';
+import GrayedOutOverlay from './GrayedOutOverlay';
 
 const SingleEditableFlashcard = (props : SingleFlashcardProps) => {
     const colorScheme = useColorScheme();
     const { height } = useWindowDimensions();
     const [flaschardQuestionText, setFlashcardQuestionText] = useState(props.flashcard.question);
     const [flaschardAnswerText, setFlaschardAnswerText] = useState(props.flashcard.answer);
-    const [isFocused, setIsFocused] = useState(false);
-
+    const [isEndFlashcard, setIsEndFlashcard] = useState(false);
+    
     useEffect(() => {
+        props.flashcard.GUID === 0 ? setIsEndFlashcard(true) : setIsEndFlashcard(false);
         setFlashcardQuestionText(props.flashcard.question);
         setFlaschardAnswerText(props.flashcard.answer);
+
     }, [props.flashcard])
-
-
 
     useEffect(() => {
         props.handleFlashcardUpdate({
@@ -37,44 +36,38 @@ const SingleEditableFlashcard = (props : SingleFlashcardProps) => {
         });
     }, [flaschardQuestionText, flaschardAnswerText])
 
-    if(props.flashcard.GUID !== 0) {
-        return (
-            <View style={[styles.container, {height}]}>
-                <View style={styles.questionBox}>
-                
-
-                    <Text style={styles.anotationText}>Question</Text>
-                    <TextInput
-                    
-                    style={styles.flashcardText}
-                    onChangeText={setFlashcardQuestionText}
-                    value={flaschardQuestionText}
-                    >
-                    </TextInput>
-                </View>
-                
-                <View style={styles.answerBox}>
-                    <Text style={styles.anotationText}>Answer</Text>
-                    <TextInput
-                    style={styles.flashcardText}
-                    onChangeText={setFlaschardAnswerText}
-                    value={flaschardAnswerText}
-                    >
-                    </TextInput>
-                </View>
-                
-            </View>
-        )
-    } else {
-        return(
-           <View style={[styles.container, {height}]}>
-                <View style={styles.endFlashcard}></View>
-            </View> 
-        )
-        
-    }
-
     
+
+    return (
+        <View style={[styles.container, {height}]}>
+                <GrayedOutOverlay visible={isEndFlashcard} handleAddFlashcard={props.handleAddFlashcard}>
+
+                </GrayedOutOverlay>
+            <View style={styles.questionBox}>
+            
+
+                <Text style={styles.anotationText}>Question</Text>
+                <TextInput
+                
+                style={styles.flashcardText}
+                onChangeText={setFlashcardQuestionText}
+                value={flaschardQuestionText}
+                >
+                </TextInput>
+            </View>
+            
+            <View style={styles.answerBox}>
+                <Text style={styles.anotationText}>Answer</Text>
+                <TextInput
+                style={styles.flashcardText}
+                onChangeText={setFlaschardAnswerText}
+                value={flaschardAnswerText}
+                >
+                </TextInput>
+            </View>
+            
+        </View>
+    )
 }
 
 const styles = StyleSheet.create({
@@ -92,13 +85,6 @@ const styles = StyleSheet.create({
     },
     answerBox: {
         flex: 0.45,
-        borderRadius: 20,
-        padding: 20,
-        margin: 10,
-        backgroundColor: 'orange',
-    },
-    endFlashcard: {
-        flex: 0.9,
         borderRadius: 20,
         padding: 20,
         margin: 10,
