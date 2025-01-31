@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, FlatList, Pressable} from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable, TouchableHighlight} from 'react-native';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Link } from 'expo-router';
@@ -8,8 +8,10 @@ import { Flashcard, FlashcardPack, FlashcardPackBasicInfoList } from '@/types/cu
 import useFetchLocalFlashcardPackBasicInfoList from '@/hooks/useFetchLocalFlashcardPackBasicInfoList';
 import useSaveLocalFlashcardPack from '@/hooks/useSaveLocalFlashcardPack';
 import useSaveLocalFlashcardPackBasicInfoList from '@/hooks/useSaveLocalFlashcardPackBasicInfoList';
-
+import AntDesign from '@expo/vector-icons/AntDesign';
 import { useNavigation } from 'expo-router';
+import useRemoveLocalFlashcardPack from '@/hooks/useRemoveLocalFlashcardPack';
+import uuid from 'react-native-uuid';
 
 
 const flashcards = () => {
@@ -18,15 +20,47 @@ const flashcards = () => {
     const [flashcardPackBasicInfoList, setFlashcardPackBasicInfoList] = useState<FlashcardPackBasicInfoList | null>(null);
     const [error, setError] = useState <Error | null>(null);
     const navigation = useNavigation();
-
  
 
     const isFlashcardPackBasicInfoList = (data: FlashcardPackBasicInfoList | Error) => {
         return !(data instanceof Error)
     }
 
+    const handleAddFlashcardPack = () => {
+        const newFlashcardPack : FlashcardPack = {
+            GUID: uuid.v4(),
+            name: 'new pack',
+            flashcards: []
+        }
+        useSaveLocalFlashcardPack(newFlashcardPack).then(() => {
+            useFetchLocalFlashcardPackBasicInfoList().then(result => {
+            console.log(result);
+            
+            result.push({
+            GUID: newFlashcardPack.GUID,
+            name: newFlashcardPack.name
+            })
+            useSaveLocalFlashcardPackBasicInfoList(result).then(() => {
+                setFlashcardPackBasicInfoList(result);
+            });
+            })
+        })
+    }
+
+    const handleDeleteFlashcardPack = (flashcardPackGuid) => {
+        useRemoveLocalFlashcardPack(flashcardPackGuid).then(() => {
+            useFetchLocalFlashcardPackBasicInfoList().then(result => {
+                console.log(result);
+                result = result.filter(item => item.GUID !== flashcardPackGuid);
+                useSaveLocalFlashcardPackBasicInfoList(result).then(() => {
+                    setFlashcardPackBasicInfoList(result);
+                })
+                })
+        })
+    }
+
     useEffect(() => {
-    
+        console.log('test1');
         //useSaveLocalFlashcardPackBasicInfoList(sampleFlashcardPackBasicInfoList);
 
         useFetchLocalFlashcardPackBasicInfoList().then((result) => {
@@ -37,7 +71,9 @@ const flashcards = () => {
             }
             
         })
+        console.log('test1 end');
     }, [])
+
 
     if (!flashcardPackBasicInfoList) { 
         return <Text>Loading...</Text>;
@@ -71,10 +107,24 @@ const flashcards = () => {
                                 <Text style={[styles.item, {color: color}]}>Edit</Text>
                             </Pressable>
                         </Link> 
+                        <TouchableHighlight
+                        onPress={() => handleDeleteFlashcardPack(item.GUID)}
+                        >
+                            <Text style={{color: 'white'}}>Delete</Text>
+                        </TouchableHighlight>
                     </View>
             }
             >
             </FlatList>
+            <View style={styles.addFlashcardPackContainer}>
+                <TouchableHighlight
+                onPress={handleAddFlashcardPack}
+                >
+                    <AntDesign name="plus" size={50} color="white" /> 
+                    
+                </TouchableHighlight>
+            </View>
+            
         </View>  
     )
 }
@@ -88,6 +138,11 @@ const styles = StyleSheet.create({
         padding: 10,
         fontSize: 33,
         height: 44,
+    },
+    addFlashcardPackContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'flex-start'
     }
 })
 

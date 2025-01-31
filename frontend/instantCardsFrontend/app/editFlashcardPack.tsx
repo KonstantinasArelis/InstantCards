@@ -8,8 +8,8 @@ import NextFlashcardButton from './NextFlashcardButton';
 import PreviousFlashcardButton from './PreviousFlashcardButton';
 import SingleEditableFlashcard from './SingleEditableFlashcard';
 import useSaveLocalFlashcardPack from '@/hooks/useSaveLocalFlashcardPack';
-import { FlatList } from 'react-native-gesture-handler';
-const { v4: uuidv4 } = require('uuid');
+import { FlatList } from 'react-native';
+import uuid from 'react-native-uuid';
 
 const editFlashcardPack = () => {
     const flashcardPackGUID = useLocalSearchParams<any>();
@@ -72,7 +72,7 @@ const editFlashcardPack = () => {
 
     const handleAddFlashcard = () => {
         const newFlashcard : Flashcard= {
-            GUID: uuidv4(),
+            GUID: uuid.v4(),
             question: 'Add a question',
             answer: 'Add an answer'
         };
@@ -112,27 +112,17 @@ const editFlashcardPack = () => {
     }
 
     return(
-        <View style={styles.container}>
-             {/* <SingleEditableFlashcard flashcard={flashcardPack.flashcards[currentFlashcardIndex]} handleFlashcardUpdate={handleFlashcardUpdate}></SingleEditableFlashcard> */}
-
-            <FlatList 
-            style={styles.slidingContainer}
-            data={flashcardPack.flashcards}
-            renderItem={({ item }) => <SingleEditableFlashcard flashcard={item} handleFlashcardUpdate={handleFlashcardUpdate} handleAddFlashcard={handleAddFlashcard} handleDeleteFlashcard={handleDeleteFlashcard}/>}
-            horizontal
-            showsHorizontalScrollIndicator
-            pagingEnabled
-            >
-            </FlatList>
-
-
-            {/* <View style={styles.controls}>
-                <View style={styles.buttons}>
-                    <PreviousFlashcardButton handlePrevious={onPressPrevious}></PreviousFlashcardButton>
-                    <NextFlashcardButton handleNext={onPressNext} ></NextFlashcardButton>
-                </View>
-            </View> */}
-        </View>
+            <View style={styles.container}>
+                <FlatList 
+                style={styles.slidingContainer}
+                data={flashcardPack.flashcards}
+                renderItem={({ item }) => <SingleEditableFlashcard flashcard={item} handleFlashcardUpdate={handleFlashcardUpdate} handleAddFlashcard={handleAddFlashcard} handleDeleteFlashcard={handleDeleteFlashcard}/>}
+                horizontal
+                showsHorizontalScrollIndicator
+                pagingEnabled
+                >
+                </FlatList>
+            </View>
     )
 
 }
