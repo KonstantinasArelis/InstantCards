@@ -3,19 +3,24 @@ import { useState, useEffect} from 'react';
 import useFetchLocalFlashcardPack from "../hooks/useFetchLocalFlashcardPack";
 import { FlashcardPack, Flashcard } from '@/types/custom';
 import SingleFlashcard from './SingleFlashcard';
-import { View, Text , StyleSheet, TouchableHighlight, TextInput } from 'react-native'
+import { View, Text , StyleSheet, TouchableHighlight, TextInput, KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native'
 import NextFlashcardButton from './NextFlashcardButton';
 import PreviousFlashcardButton from './PreviousFlashcardButton';
 import SingleEditableFlashcard from './SingleEditableFlashcard';
 import useSaveLocalFlashcardPack from '@/hooks/useSaveLocalFlashcardPack';
 import { FlatList } from 'react-native';
 import uuid from 'react-native-uuid';
+import KeyboardAvoidingContainer from '@/components/KeyboardAvoidingContainer';
+import { ScrollView, Dimensions } from 'react-native';
+import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
+
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 const editFlashcardPack = () => {
     const flashcardPackGUID = useLocalSearchParams<any>();
     const [flashcardPack, setFlashcardPack] = useState<FlashcardPack | null>(null);
     const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState<number>(0);
-
+    const scrollX = useSharedValue(0);
 
     const isFlashcardPack = (data: FlashcardPack | Error) => {
         return !(data instanceof Error)
@@ -32,30 +37,6 @@ const editFlashcardPack = () => {
             }
         })
     }, [])
-
-
-
-    const onPressNext = () => {
-        if(!flashcardPack){
-            return;
-        }
-        
-        if(currentFlashcardIndex < flashcardPack.flashcards.length-1){
-            const newIndex = currentFlashcardIndex + 1;
-            setCurrentFlashcardIndex(newIndex);
-        }
-    }
-
-    const onPressPrevious = () => {
-        if(!flashcardPack){
-            return;
-        }
-
-        if(currentFlashcardIndex > 0){
-            const newIndex = currentFlashcardIndex - 1;
-            setCurrentFlashcardIndex(newIndex);
-        }
-    }
     
     const handleFlashcardUpdate = (updatedFlashcard) => {
         setFlashcardPack(prevFlashcardPack => ({
@@ -102,6 +83,12 @@ const editFlashcardPack = () => {
         
     }, [flashcardPack])
 
+    const onScrollHandler = useAnimatedScrollHandler({
+        onScroll: (e) => {
+            scrollX.value = e.contentOffset.x;
+        }
+    })
+
     if(!flashcardPack){
         return(
             <View>
@@ -112,48 +99,27 @@ const editFlashcardPack = () => {
     }
 
     return(
-            <View style={styles.container}>
-                <FlatList 
-                style={styles.slidingContainer}
-                data={flashcardPack.flashcards}
-                renderItem={({ item }) => <SingleEditableFlashcard flashcard={item} handleFlashcardUpdate={handleFlashcardUpdate} handleAddFlashcard={handleAddFlashcard} handleDeleteFlashcard={handleDeleteFlashcard}/>}
-                horizontal
-                showsHorizontalScrollIndicator
-                pagingEnabled
-                >
-                </FlatList>
-            </View>
+        <View style={styles.container}> 
+            <Animated.FlatList 
+            data={flashcardPack.flashcards}
+            renderItem={({ item }) => 
+                <SingleEditableFlashcard scrollX={scrollX} flashcard={item} flashcardIndex={flashcardPack.flashcards.indexOf(item)} handleFlashcardUpdate={handleFlashcardUpdate} handleAddFlashcard={handleAddFlashcard} handleDeleteFlashcard={handleDeleteFlashcard}/>
+            }
+            keyExtractor={item => item.GUID}
+            horizontal
+            showsHorizontalScrollIndicator
+            pagingEnabled
+            onScroll={onScrollHandler}
+            >
+            </Animated.FlatList>
+        </View>
     )
-
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1
     },
-    controls: {
-        flex: 0.2,
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        alignItems: 'center'
-    },
-    buttons: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-between'
-    },
-    nextButton: {
-        width: 100,
-        height: 40,
-        margin: 10,
-        borderRadius: 10,
-    },
-    buttonText: {
-        textAlign: 'center',
-    },
-    slidingContainer: {
-        
-    }
 })
 
 export default editFlashcardPack;

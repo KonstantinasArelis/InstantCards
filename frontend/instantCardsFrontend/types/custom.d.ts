@@ -30,6 +30,7 @@ export type  FlashcardPackBasicInfoList = FlashcardPackBasicInfo[];
 
 interface SingleFlashcardProps {
     flashcard: Flashcard;
+    flashcardIndex: number;
 }
 
 interface FlashcardPackGUIDFromRoute {

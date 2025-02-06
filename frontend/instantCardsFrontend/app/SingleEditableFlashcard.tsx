@@ -1,4 +1,4 @@
-import { View, Text , StyleSheet, TextInput, useWindowDimensions } from 'react-native'
+import { View, Text , StyleSheet, TextInput, KeyboardAvoidingView, Dimensions, SafeAreaView } from 'react-native'
 import {
     Alert,
     Platform,
@@ -14,13 +14,40 @@ import { useState, useEffect } from 'react';
 import { Flashcard, SingleFlashcardProps } from '@/types/custom';
 import GrayedOutOverlay from './GrayedOutOverlay';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { ScrollView } from 'react-native';
+import Animated, { Extrapolation, interpolate, SharedValue, useAnimatedStyle } from 'react-native-reanimated';
+
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
 const SingleEditableFlashcard = (props : SingleFlashcardProps) => {
     const colorScheme = useColorScheme();
-    const { height } = useWindowDimensions();
     const [flaschardQuestionText, setFlashcardQuestionText] = useState(props.flashcard.question);
     const [flaschardAnswerText, setFlaschardAnswerText] = useState(props.flashcard.answer);
     const [isEndFlashcard, setIsEndFlashcard] = useState(false);
-    
+    const rnAnimatedStyle = useAnimatedStyle(() => {
+        return{
+            transform: [
+                {
+                    translateX: interpolate(
+                        props.scrollX.value,
+                        [(props.flashcardIndex-1) * screenWidth, props.flashcardIndex * screenWidth, (props.flashcardIndex+1) * screenWidth],
+                        [-screenWidth * 0.25, 0, screenWidth * 0.25],
+                        Extrapolation.CLAMP
+                    ),
+                },
+                {
+                    scale: interpolate(
+                        props.scrollX.value,
+                        [(props.flashcardIndex-1) * screenWidth, props.flashcardIndex * screenWidth, (props.flashcardIndex+1) * screenWidth],
+                        [0.9, 1, 0.9],
+                        Extrapolation.CLAMP
+                    )
+                }
+            ]
+        }
+    })
+
+
     useEffect(() => {
         props.flashcard.GUID === 0 ? setIsEndFlashcard(true) : setIsEndFlashcard(false);
         setFlashcardQuestionText(props.flashcard.question);
@@ -39,66 +66,71 @@ const SingleEditableFlashcard = (props : SingleFlashcardProps) => {
     
 
     return (
-        <View style={[styles.container, {height}]}>
+        <Animated.View style={[styles.container, rnAnimatedStyle]}>
+            <Text>{props.flashcardIndex}</Text>
             <GrayedOutOverlay visible={isEndFlashcard} handleAddFlashcard={props.handleAddFlashcard}></GrayedOutOverlay>
 
-
-
-            <View style={styles.questionBox}>
             
-
-                <Text style={styles.anotationText}>Question</Text>
-                <TextInput
-                
-                style={styles.flashcardText}
-                onChangeText={setFlashcardQuestionText}
-                value={flaschardQuestionText}
+                <View style={styles.questionBox}>
+                    <Text style={styles.anotationText}>Question</Text>
+                    <TextInput
+                    multiline
+                    style={styles.flashcardText}
+                    onChangeText={setFlashcardQuestionText}
+                    value={flaschardQuestionText}
+                    >
+                    </TextInput>
+                </View>
+                <KeyboardAvoidingView
+                behavior='padding'
+                keyboardVerticalOffset= {100}
                 >
-                </TextInput>
-            </View>
-            
-            <View style={styles.answerBox}>
-                <Text style={styles.anotationText}>Answer</Text>
-                <TextInput
-                style={styles.flashcardText}
-                onChangeText={setFlaschardAnswerText}
-                value={flaschardAnswerText}
-                >
-                </TextInput>
-            </View>
+                    <View style={styles.answerBox}>
+                        <Text style={styles.anotationText}>Answer</Text>
+                        <TextInput
+                        multiline
+                        style={styles.flashcardText}
+                        onChangeText={setFlaschardAnswerText}
+                        value={flaschardAnswerText}
+                        >
+                        </TextInput>
+                    </View>
+                </KeyboardAvoidingView>
             <TouchableHighlight
-            onPress={() => props.handleDeleteFlashcard(props.flashcard.GUID)}
-            >
-                <AntDesign name="delete" size={24} color="black" />
+                style={styles.removeButton}
+                onPress={() => props.handleDeleteFlashcard(props.flashcard.GUID)}
+                >
+                    <AntDesign name="delete" size={24} color="black" />
             </TouchableHighlight>
-            
-        </View>
+        </Animated.View>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        flexDirection: 'column',
-        alignItems: 'center',
+        width: screenWidth,
+        height: screenHeight,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     questionBox: {
-        flex: 0.45,
         borderRadius: 20,
         padding: 20,
         margin: 10,
         backgroundColor: 'orange',
+        width: screenWidth * 0.7,
+        height: screenHeight * 0.35,
     },
     answerBox: {
-        flex: 0.45,
         borderRadius: 20,
         padding: 20,
         margin: 10,
         backgroundColor: 'orange',
+        width: screenWidth * 0.7,
+        height: screenHeight * 0.35,
     },
     flashcardText: {
         outlineStyle: 'none',
-        height: '100%',
         textAlign: 'center',
         fontSize: 20,
         fontFamily: 'Courier New',
@@ -107,6 +139,9 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 10,
         fontFamily: 'Courier New',
+    },
+    removeButton: {
+        flex: 1,
     }
 })
 
