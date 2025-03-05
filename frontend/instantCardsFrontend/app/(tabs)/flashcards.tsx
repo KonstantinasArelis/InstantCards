@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, FlatList, Pressable, TouchableHighlight} from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable, TouchableHighlight, Dimensions, TouchableWithoutFeedback} from 'react-native';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Link } from 'expo-router';
@@ -12,7 +12,10 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useNavigation } from 'expo-router';
 import useRemoveLocalFlashcardPack from '@/hooks/useRemoveLocalFlashcardPack';
 import uuid from 'react-native-uuid';
+import * as ImagePicker from "expo-image-picker";
+import FlashcardPackIcon from '../FlashcardPackIcon';
 
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 const flashcards = () => {
     const colorScheme = useColorScheme();
@@ -20,7 +23,10 @@ const flashcards = () => {
     const [flashcardPackBasicInfoList, setFlashcardPackBasicInfoList] = useState<FlashcardPackBasicInfoList | null>(null);
     const [error, setError] = useState <Error | null>(null);
     const navigation = useNavigation();
- 
+    const [image, setImage] = useState();
+    const [uploadOptions, SetUploadOptions] = useState(false);
+    const showUploadOptions = () => SetUploadOptions(true);
+    const hideUploadOptions = () => SetUploadOptions(false);
 
     const isFlashcardPackBasicInfoList = (data: FlashcardPackBasicInfoList | Error) => {
         return !(data instanceof Error)
@@ -59,6 +65,32 @@ const flashcards = () => {
         })
     }
 
+    const uploadImage = async () => {
+        try {
+            await ImagePicker.requestCameraPermissionsAsync();
+            let result = await ImagePicker.launchCameraAsync({
+                cameraType: ImagePicker.CameraType.back,
+                allowsEditing: true,
+                aspect: [1,1],
+                quality: 1,
+            });
+
+        if(!result.canceled) {
+            await saveImage(result.assets[0].uri);
+        }
+        } catch (error) {
+            alert("Error uploading image: " + error.message);
+        }
+    };
+
+    const saveImage = async (image) => {
+        try {
+            setImage(image);
+        } catch(error) {
+            throw error;
+        }
+    }
+
     useEffect(() => {
         console.log('test1');
         //useSaveLocalFlashcardPackBasicInfoList(sampleFlashcardPackBasicInfoList);
@@ -81,44 +113,43 @@ const flashcards = () => {
 
     return (
             <View style={styles.container}>
+                {uploadOptions && (
+                <View style={styles.popupOverlay}>
+                    <TouchableWithoutFeedback onPress={hideUploadOptions}>
+                        <View style={styles.popupBackground}>
+
+                        </View>
+                    </TouchableWithoutFeedback>
+                    
+                    <View style={styles.centeringContainer}>
+                        <View style={styles.uploadOptionsMenu}>
+                            <TouchableWithoutFeedback
+                            onPress={handleAddFlashcardPack}
+                            >
+                                <AntDesign style={styles.uploadOptionsItem} name="camerao" size={screenWidth * 0.15} color="black" />
+                            </TouchableWithoutFeedback>
+                            
+                            <AntDesign style={styles.uploadOptionsItem} name="upload" size={screenWidth * 0.15} color="black" />
+                        </View> 
+                    </View> 
+                    
+                    
+                </View> 
+                )}
+            
             <FlatList
             data={flashcardPackBasicInfoList}
             renderItem={
                 ({item}) => 
-                    <View>
-                       <Link href={{
-                            pathname: "/flashcardPlay",
-                            params: { GUID: item.GUID},
-                        }}
-                        style={{marginHorizontal: 'auto'}}
-                        asChild>
-                            <Pressable>
-                                <Text style={[styles.item, {color: color}]}>{item.name}</Text>
-                            </Pressable>
-                        </Link> 
+                    <FlashcardPackIcon item={item} handleDeleteFlashcardPack={handleDeleteFlashcardPack}>
 
-                        <Link href={{
-                            pathname: "/editFlashcardPack",
-                            params: { GUID: item.GUID},
-                        }}
-                        style={{marginHorizontal: 'auto'}}
-                        asChild>
-                            <Pressable>
-                                <Text style={[styles.item, {color: color}]}>Edit</Text>
-                            </Pressable>
-                        </Link> 
-                        <TouchableHighlight
-                        onPress={() => handleDeleteFlashcardPack(item.GUID)}
-                        >
-                            <Text style={{color: 'white'}}>Delete</Text>
-                        </TouchableHighlight>
-                    </View>
+                    </FlashcardPackIcon>
             }
             >
             </FlatList>
             <View style={styles.addFlashcardPackContainer}>
                 <TouchableHighlight
-                onPress={handleAddFlashcardPack}
+                onPress={showUploadOptions}
                 >
                     <AntDesign name="plus" size={50} color="white" /> 
                     
@@ -133,6 +164,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingTop: 22,
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     item: {
         padding: 10,
@@ -143,7 +176,54 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'flex-start'
-    }
+    },
+    greyOverlay: {
+        position: 'absolute',
+        zIndex: 100,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    uploadOptionsMenu: {
+        zIndex: 101,
+        backgroundColor: 'white',
+        width: screenWidth * 0.85,
+        height: screenHeight * 0.2,
+        borderRadius: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    centeringContainer: {
+        flex: 0.8,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    uploadOptionsItem: {
+        margin: screenWidth * 0.1,
+    },
+    popupOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'transparent',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    popupBackground: {
+        position: 'absolute', // Background covers the whole overlay
+        zIndex: 100,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Greyed-out color (adjust opacity as needed)
+    },
+
 })
 
 export default flashcards;
