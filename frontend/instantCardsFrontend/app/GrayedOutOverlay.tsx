@@ -1,6 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, Text, TouchableHighlight } from 'react-native';
+import { View, StyleSheet, Text, TouchableHighlight, Dimensions } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
+
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 const GrayedOutOverlay = ({visible, handleAddFlashcard}) => {
 
@@ -31,13 +33,14 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     zIndex: 100,
+    marginLeft: 50,
+    marginRight: 50,
+    paddingBottom: 150,
     borderRadius: 10,
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
   },
   container: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
   }
