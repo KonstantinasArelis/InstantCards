@@ -2,16 +2,11 @@ import { useLocalSearchParams } from 'expo-router';
 import { useState, useEffect} from 'react';
 import useFetchLocalFlashcardPack from "../hooks/useFetchLocalFlashcardPack";
 import { FlashcardPack, Flashcard } from '@/types/custom';
-import SingleFlashcard from './SingleFlashcard';
-import { View, Text , StyleSheet, TouchableHighlight, TextInput, KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native'
-import NextFlashcardButton from './NextFlashcardButton';
-import PreviousFlashcardButton from './PreviousFlashcardButton';
+import { View, Text , StyleSheet } from 'react-native'
 import SingleEditableFlashcard from './SingleEditableFlashcard';
 import useSaveLocalFlashcardPack from '@/hooks/useSaveLocalFlashcardPack';
-import { FlatList } from 'react-native';
 import uuid from 'react-native-uuid';
-import KeyboardAvoidingContainer from '@/components/KeyboardAvoidingContainer';
-import { ScrollView, Dimensions } from 'react-native';
+import { Dimensions } from 'react-native';
 import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
