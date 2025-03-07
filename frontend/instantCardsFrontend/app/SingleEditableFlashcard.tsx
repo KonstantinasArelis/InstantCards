@@ -1,4 +1,4 @@
-import { View, Text , StyleSheet, TextInput, KeyboardAvoidingView, Dimensions, SafeAreaView } from 'react-native'
+import { View, Text , StyleSheet, TextInput, KeyboardAvoidingView, Dimensions, SafeAreaView, PanResponder, findNodeHandle } from 'react-native'
 import {
     Alert,
     Platform,
@@ -16,9 +16,10 @@ import GrayedOutOverlay from './GrayedOutOverlay';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { ScrollView, Keyboard } from 'react-native';
 import Animated, { Extrapolation, interpolate, SharedValue, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { transform } from '@babel/core';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
+const TAP_THRESHOLD = 5; // Adjust this value to fine-tune tap vs swipe sensitivity
 
 const SingleEditableFlashcard = (props : SingleFlashcardProps) => {
     const colorScheme = useColorScheme();
@@ -26,14 +27,17 @@ const SingleEditableFlashcard = (props : SingleFlashcardProps) => {
     const [flaschardAnswerText, setFlaschardAnswerText] = useState(props.flashcard.answer);
     const [isEndFlashcard, setIsEndFlashcard] = useState(false);
     const scale = useSharedValue(screenHeight * 0.35);
-    // const bottomPadding = useSharedValue(0);
     const scrollViewRef = useRef(null);
+    const questionTextInputRef = useRef(null);
+    const answerTextInputRef = useRef(null);
+    const [isSwiping, setIsSwiping] = useState(false);
+    const containerRef = useRef(null);
 
-    
+
     const answerReanimatedStyle = useAnimatedStyle(() => {
         return {
             height: scale.value,
-            
+
         };
     }, []);
 
@@ -86,70 +90,53 @@ const SingleEditableFlashcard = (props : SingleFlashcardProps) => {
 
     const handleAnswerBlur = () => {
         scale.value = withTiming(screenHeight * 0.35)
-        
     }
 
-    // useEffect(() => {
-    //     const keyboardDidShowListener = Keyboard.addListener(
-    //         Platform.OS === 'android' ? 'keyboardDidShow' : 'keyboardWillShow',
-    //         (event) => {
-    //             bottomPadding.value = withTiming(event.endCoordinates.height);
-    //         }
-    //     );
-    //     const keyboardDidHideListener = Keyboard.addListener(
-    //         Platform.OS === 'android' ? 'keyboardDidHide' : 'keyboardWillHide',
-    //         () => {
-    //           bottomPadding.value = withTiming(0);
-    //         }
-    //       );
-
-    //     return () => {
-    //     keyboardDidShowListener.remove();
-    //     keyboardDidHideListener.remove();
-    //     };
-    // }, []);
 
     return (
-        <Animated.View style={[styles.container, rnAnimatedStyle]}>
+        <Animated.View
+            style={[styles.container, rnAnimatedStyle]}
+        >
             <Text>{props.flashcardIndex}</Text>
             <GrayedOutOverlay visible={isEndFlashcard} handleAddFlashcard={props.handleAddFlashcard}></GrayedOutOverlay>
-            
-            <ScrollView keyboardShouldPersistTaps='always' ref={scrollViewRef}>
-                <View style={styles.questionBox}>
+
+            <ScrollView  ref={scrollViewRef} bounces={false} >
+                <View
+                    style={styles.questionBox}
+                >
                     <Text style={styles.anotationText}>Question</Text>
                     <TextInput
+                    ref={questionTextInputRef}
                     multiline
                     style={styles.flashcardText}
                     onChangeText={setFlashcardQuestionText}
                     value={flaschardQuestionText}
-                    >
-                    </TextInput>
+                    />
                 </View>
-                
-                <Animated.View style={[styles.answerBox, answerReanimatedStyle]}>
+
+                <Animated.View
+                    style={[styles.answerBox, answerReanimatedStyle]}
+                >
                     <Text style={styles.anotationText}>Answer</Text>
                     <TextInput
+                    ref={answerTextInputRef}
                     multiline
                     style={styles.flashcardText}
                     onChangeText={setFlaschardAnswerText}
                     value={flaschardAnswerText}
                     onFocus={handleAnswerFocus}
                     onBlur={handleAnswerBlur}
-                    >
-                    </TextInput>
+                    />
                 </Animated.View>
-                
+
                 <TouchableHighlight
                     style={styles.removeButton}
                     onPress={() => props.handleDeleteFlashcard(props.flashcard.GUID)}
                     >
-                        <AntDesign name="delete" size={24} color="black" />
+                        <AntDesign name="delete" size={24} color="white" />
                 </TouchableHighlight>
-                {/* <View style={{height: bottomPadding.value, width: 100, backgroundColor: 'green'}}>
-
-                </View> */}
             </ScrollView>
-            
+
         </Animated.View>
     )
 }
@@ -182,6 +169,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 20,
         fontFamily: 'Courier New',
+        flex: 1
     },
     anotationText: {
         textAlign: 'center',
@@ -189,7 +177,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Courier New',
     },
     removeButton: {
-        flex: 1,
+        alignItems: 'center'
     }
 })
 
