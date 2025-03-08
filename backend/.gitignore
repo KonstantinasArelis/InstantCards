@@ -1,0 +1,92 @@
+# Jakarta EE REST API Project .gitignore
+
+# --- Build output directories ---
+target/         # Maven default build output
+build/          # Gradle default build output (or general build dir)
+.mvn/wrapper/target/ # Maven wrapper target directory
+out/            # IntelliJ IDEA default output directory
+
+# --- IDE specific files ---
+.idea/           # IntelliJ IDEA project files
+*.iml            # IntelliJ IDEA module files
+.settings/       # Eclipse project files
+.project         # Eclipse project file
+.classpath       # Eclipse classpath file
+.apt_generated/ # Eclipse generated sources
+.metadata/      # Eclipse metadata
+bin/            # Eclipse compiled output
+nbproject/      # NetBeans project files
+build/           # NetBeans build output
+dist/            # NetBeans distribution output
+nbactions.xml    # NetBeans actions configuration
+manifest.mf      # NetBeans manifest file
+*.nb-gradle     # NetBeans Gradle files
+
+# --- Java class files and archives ---
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.tar.bz2
+
+# --- Log files ---
+*.log
+logs/
+*.out
+*.err
+
+# --- Temporary files ---
+*.tmp
+tmp/
+temp/
+
+# --- Dependency and cache files ---
+.gradle/        # Gradle cache directory
+.m2/             # Maven repository (local repo - be cautious if you want to ignore all local repo)
+dependency-reduced-pom.xml
+*.iml.local     # IntelliJ IDEA local module files
+*.ipr           # IntelliJ IDEA project files (if you use them)
+*.iws           # IntelliJ IDEA workspace files (if you use them)
+.DS_Store       # macOS folder metadata
+Thumbs.db        # Windows thumbnail cache files
+
+# --- Jakarta EE specific output (if applicable) ---
+# Example for generated client stubs, documentation, etc.
+generated-sources/
+generated-docs/
+client-stubs/
+
+# --- Configuration files (sensitive - be VERY careful what you ignore here) ---
+# Ideally, sensitive config should be handled via environment variables or external config
+# and NOT committed to Git.
+# If you have files with passwords or API keys, ensure they are NOT tracked.
+# Example (be cautious and review!):
+# application.properties  # If it contains sensitive data (better to use environment vars)
+# application.yml       # Same as above
+# secrets.properties    # Example for a dedicated secrets file (should DEFINITELY not be committed)
+
+# --- OS specific files ---
+.DS_Store
+Thumbs.db
+
+# --- Other possible ignores (adjust to your project) ---
+# node_modules/      # If you have frontend assets and Node.js
+# webapp/dist/       # If you build frontend assets into a dist folder
+# documentation/     # If you generate project documentation
+# reports/           # If you generate reports (e.g., test reports)
+# coverage/          # If you generate code coverage reports
+
+# --- Custom ignores ---
+# Add any project-specific files or directories you want to ignore here.
+# For example:
+# local-config.xml
+# my-private-data/
+
+# --- Keep important project files tracked (explicitly un-ignore if needed) ---
+# Example: If you accidentally ignored a specific configuration file
+# !src/main/resources/important-config.xml
+
+
+# --- End of .gitignore ---
