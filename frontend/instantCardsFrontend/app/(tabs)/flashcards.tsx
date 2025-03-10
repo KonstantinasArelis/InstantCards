@@ -110,7 +110,7 @@ const flashcards = () => {
             setImage(image);
             SetWaitingForResponse(true);
             setTimeout( () => {
-                fetch("http://localhost:5208/flashcardpack", {
+                fetch("http://192.168.1.107:8080/backend-1.0-SNAPSHOT/api/hello-world", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -133,7 +133,7 @@ const flashcards = () => {
                     handleAddFlashcardPackPreMade(responseData);
                     SetWaitingForResponse(false);
                 }).catch(err => {
-                    console.dir(response);
+                    console.log(response);
                     console.log("error when getting the response from api 2");
                     console.log(err);
                     SetErrorGettingImageData(true);
