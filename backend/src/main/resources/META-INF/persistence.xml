@@ -4,7 +4,6 @@
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd"
              version="3.1">
   <persistence-unit name="myPersistenceUnit" transaction-type="JTA">
-  <!-- TODO - make this persistence unit functional. It needs <provider>, <jta-data-source>, <properties> -->
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <jta-data-source>java:jboss/datasources/ExampleDS</jta-data-source>
 
