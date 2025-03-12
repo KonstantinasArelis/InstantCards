@@ -1,7 +1,10 @@
 package entities;
 
+import contracts.FlashcardDto;
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.*;
 
+@Entity
 public class Flashcard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

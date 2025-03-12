@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 public class FlashcardPack {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,7 +15,7 @@ public class FlashcardPack {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String name;
 
-    @OneToMany(mappedBy = "flashcardPack", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "flashcardPack", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Flashcard> flashcards = new ArrayList<>();
 
     // Constructors
