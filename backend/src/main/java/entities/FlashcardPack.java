@@ -1,5 +1,7 @@
 package entities;
 
+import contracts.FlashcardDto;
+import contracts.FlashcardPackDto;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
@@ -20,6 +22,13 @@ public class FlashcardPack {
 
     // Constructors
     public FlashcardPack() {
+    }
+
+    public FlashcardPack(FlashcardPackDto packDto){
+        setName(packDto.getName());
+        for(FlashcardDto flashcard : packDto.getFlashcards()){
+            flashcards.add(new Flashcard(flashcard, this));
+        }
     }
 
     public FlashcardPack(String name) {

@@ -62,15 +62,15 @@ public class FlashcardPackEndpoints {
     @Path("/create")
     @Transactional
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createFlashcardPack(FlashcardPack newFlashcardPack) {
+    public Response createFlashcardPack(FlashcardPackDto newFlashcardPackData) {
         try {
-            // TODO validation
+            FlashcardPack newFlashcardPack = new FlashcardPack(newFlashcardPackData);
             em.persist(newFlashcardPack);
             em.flush();
 
-            URI createdUri = URI.create("/api/flashcardPack/" + newFlashcardPack.getId());
+            URI createdUri = URI.create("/api/flashcardPack/" + newFlashcardPackData.getId());
             return Response.created(createdUri)
-                    .entity(newFlashcardPack)
+                    .entity(newFlashcardPackData)
                     .build();
         } catch (Exception e) {
             e.printStackTrace(); // Log the exception for debugging

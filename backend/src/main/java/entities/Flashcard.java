@@ -1,7 +1,6 @@
 package entities;
 
 import contracts.FlashcardDto;
-import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.*;
 
 @Entity
@@ -21,6 +20,12 @@ public class Flashcard {
     private FlashcardPack flashcardPack;
 
     public Flashcard(){
+    }
+
+    public Flashcard(FlashcardDto flashcardDto, FlashcardPack flashcardPack){
+        setQuestion(flashcardDto.getQuestion());
+        setAnswer(flashcardDto.getAnswer());
+        setFlashcardPack(flashcardPack);
     }
 
     public Flashcard(String question, String answer, FlashcardPack flashcardPack){
