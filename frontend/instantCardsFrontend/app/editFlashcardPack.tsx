@@ -147,12 +147,12 @@ const editFlashcardPack = () => {
             </Animated.FlatList>
             <View style={styles.buttonContainer}>
                 <TouchableHighlight onPress={handleSaveFlashcardPack}>
-                    <View style={styles.saveButton}>
+                    <View style={styles.SaveButton}>
                         <Text>Save Flashcard Pack</Text>
                     </View>
                 </TouchableHighlight>
                 <TouchableHighlight onPress={handleDeleteFlashcardPack}>
-                    <View style={styles.saveButton}>
+                    <View style={styles.DeleteButton}>
                         <Text>Delete Flashcard Pack</Text>
                     </View>
                 </TouchableHighlight>
@@ -167,13 +167,27 @@ const styles = StyleSheet.create({
         flex: 1
     },
     buttonContainer: {
+        flexDirection: "row",
         justifyContent: "center",
         alignItems: "center"
     },
-    saveButton: {
+    SaveButton: {
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "orange"
+        backgroundColor: "green",
+        marginRight: 20,
+        marginBottom: 5,
+        padding: 5,
+        borderRadius: 5
+    },
+    DeleteButton: {
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "red",
+        marginRight: 20,
+        marginBottom: 5,
+        padding: 5,
+        borderRadius: 5
     }
 })
 

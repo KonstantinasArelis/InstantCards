@@ -27,18 +27,15 @@ const GrayedOutOverlay = ({visible, handleAddFlashcard}) => {
 const styles = StyleSheet.create({
   overlay: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+
+    bottom: screenHeight * 0.20,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     zIndex: 100,
-    marginLeft: 50,
-    marginRight: 50,
-    paddingBottom: 150,
-    borderRadius: 10,
+    width: screenWidth * 0.7,
+    height: screenHeight * 0.8,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    borderRadius: 20
   },
   container: {
     justifyContent: 'center',

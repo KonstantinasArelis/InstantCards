@@ -99,7 +99,7 @@ const SingleEditableFlashcard = (props : SingleFlashcardProps) => {
         >
             <Text>{props.flashcardIndex}</Text>
             <GrayedOutOverlay visible={isEndFlashcard} handleAddFlashcard={props.handleAddFlashcard}></GrayedOutOverlay>
-
+            
             <ScrollView  ref={scrollViewRef} bounces={false} >
                 <View
                     style={styles.questionBox}
