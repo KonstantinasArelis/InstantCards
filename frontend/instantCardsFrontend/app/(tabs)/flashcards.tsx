@@ -30,61 +30,33 @@ const flashcards = () => {
     const [response, SetResponse] = useState(null);
     const [errorGettingImageData, SetErrorGettingImageData] = useState(false);
 
-    const isFlashcardPackBasicInfoList = (data: FlashcardPackBasicInfoList | Error) => {
-        return !(data instanceof Error)
-    }
-
     useEffect( () => {
         SetErrorGettingImageData(false);
     }, [uploadOptions])
 
     const handleAddFlashcardPack = () => {
         const newFlashcardPack : FlashcardPack = {
-            GUID: uuid.v4(),
             name: 'new pack',
             flashcards: []
         }
-        useSaveLocalFlashcardPack(newFlashcardPack).then(() => {
-            useFetchLocalFlashcardPackBasicInfoList().then(result => {
-            console.log(result);
-            
-            result.push({
-            GUID: newFlashcardPack.GUID,
-            name: newFlashcardPack.name
+        fetch("http://localhost:8080/backend-1.0-SNAPSHOT/api/flashcardPack/create", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newFlashcardPack),
+        }).then(response => response.json())
+            .then(data => {
+                console.log("response: " + data);
+                fetchFlaschardPackList();
             })
-            useSaveLocalFlashcardPackBasicInfoList(result).then(() => {
-                setFlashcardPackBasicInfoList(result);
-            });
+            .catch(error => {
+                console.error(error);
             })
-        })
-    }
-
-    const handleAddFlashcardPackPreMade = (newFlashcardPack) => {
-        useSaveLocalFlashcardPack(newFlashcardPack).then(() => {
-            useFetchLocalFlashcardPackBasicInfoList().then(result => {
-            console.log(result);
-            
-            result.push({
-            GUID: newFlashcardPack.GUID,
-            name: newFlashcardPack.name
-            })
-            useSaveLocalFlashcardPackBasicInfoList(result).then(() => {
-                setFlashcardPackBasicInfoList(result);
-            });
-            })
-        })
     }
 
     const handleDeleteFlashcardPack = (flashcardPackGuid) => {
-        useRemoveLocalFlashcardPack(flashcardPackGuid).then(() => {
-            useFetchLocalFlashcardPackBasicInfoList().then(result => {
-                console.log(result);
-                result = result.filter(item => item.GUID !== flashcardPackGuid);
-                useSaveLocalFlashcardPackBasicInfoList(result).then(() => {
-                    setFlashcardPackBasicInfoList(result);
-                })
-                })
-        })
+        // Implement once endpoint is added
     }
 
     const uploadImage = async () => {
@@ -130,7 +102,7 @@ const flashcards = () => {
                     }
                 }).then (responseData => {
                     SetResponse(responseData);
-                    handleAddFlashcardPackPreMade(responseData);
+                    //handleAddFlashcardPackPreMade(responseData);
                     SetWaitingForResponse(false);
                 }).catch(err => {
                     console.log(response);
@@ -146,16 +118,30 @@ const flashcards = () => {
         }
     }
 
+    const fetchFlaschardPackList = () => {
+        fetch("http://localhost:8080/backend-1.0-SNAPSHOT/api/flashcardList/getList")
+            .then(response => {
+                if(!response.ok){
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("test: " + data.length);
+                data.items.push({
+                    id: "10000",
+                    name: "Add new pack"
+                })
+                setFlashcardPackBasicInfoList(data.items);
+
+            })
+            .catch(error => {
+                console.error(error);
+            })
+    }
+
     useEffect(() => {
-        useFetchLocalFlashcardPackBasicInfoList().then((result) => {
-            if(isFlashcardPackBasicInfoList(result)){
-                setFlashcardPackBasicInfoList(result);
-            } else {
-                console.error("error has occured");
-            }
-            
-        })
-        console.log('test1 end');
+        fetchFlaschardPackList();
     }, [])
 
 
@@ -183,7 +169,7 @@ const flashcards = () => {
                             {!waitingForResponse && !errorGettingImageData && (
                                 <View style={styles.uploadOptionsMenu}>
                                     <TouchableWithoutFeedback
-                                    onPress={uploadImage}
+                                    onPress={handleAddFlashcardPack}
                                     >
                                         <AntDesign style={styles.uploadOptionsItem} name="camerao" size={screenWidth * 0.15} color="black" />
                                     </TouchableWithoutFeedback>
@@ -204,7 +190,7 @@ const flashcards = () => {
             data={flashcardPackBasicInfoList}
             renderItem={
                 ({item}) => 
-                    <FlashcardPackIcon item={item} handleDeleteFlashcardPack={handleDeleteFlashcardPack}>
+                    <FlashcardPackIcon item={item} handleAddFlashcardPack={handleAddFlashcardPack} handleDeleteFlashcardPack={handleDeleteFlashcardPack} >
 
                     </FlashcardPackIcon>
             }
@@ -214,9 +200,9 @@ const flashcards = () => {
             <View style={styles.addFlashcardPackContainer}>
                 
                 <TouchableHighlight
-                onPress={showUploadOptions}
+                onPress={handleAddFlashcardPack}
                 >
-                    <AntDesign name="plus" size={50} color="white" /> 
+                    <AntDesign name="plus" size={500} color="black" />
                     
                 </TouchableHighlight>
             </View>

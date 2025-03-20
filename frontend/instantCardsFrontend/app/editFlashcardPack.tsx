@@ -12,7 +12,7 @@ import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 const editFlashcardPack = () => {
-    const flashcardPackGUID = useLocalSearchParams<any>();
+    const flashcardPackid = useLocalSearchParams<any>();
     const [flashcardPack, setFlashcardPack] = useState<FlashcardPack | null>(null);
     const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState<number>(0);
     const scrollX = useSharedValue(0);
@@ -22,37 +22,47 @@ const editFlashcardPack = () => {
     }
 
     useEffect(() => {
-        useFetchLocalFlashcardPack(flashcardPackGUID.GUID).then((result) => {
-            if(isFlashcardPack(result)){
-                const endFlashcard : Flashcard = {GUID: 0, question: 'add a question', answer: 'add an answer'};
-                result.flashcards.push(endFlashcard);
-                setFlashcardPack(result);
-            } else {
-                console.error("error has occured");
-            }
+        fetch(`http://localhost:8080/backend-1.0-SNAPSHOT/api/flashcardPack/${flashcardPackid.id}`)
+            .then(response => {
+                if(!response.ok){
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                data.flashcards.push(
+                    {
+                        question: "DummyQuestion",
+                        answer: "DummyAnswer"
+                    }
+                )
+                setFlashcardPack(data);
+            })
+            .catch(Error => {
+                console.error(Error);
         })
+
     }, [])
     
     const handleFlashcardUpdate = (updatedFlashcard) => {
-        setFlashcardPack(prevFlashcardPack => ({
-            ...prevFlashcardPack,
-              flashcards: prevFlashcardPack.flashcards.map((flashcard, index) => {
-                if (flashcard.GUID === updatedFlashcard.GUID) {
-                    return {...flashcard, question: updatedFlashcard.question, answer: updatedFlashcard.answer };
-                } else {
-                    return flashcard;
-                }
-              })
-            }));
+        // setFlashcardPack(prevFlashcardPack => ({
+        //     ...prevFlashcardPack,
+        //       flashcards: prevFlashcardPack.flashcards.map((flashcard, index) => {
+        //         if (flashcard.GUID === updatedFlashcard.GUID) {
+        //             return {...flashcard, question: updatedFlashcard.question, answer: updatedFlashcard.answer };
+        //         } else {
+        //             return flashcard;
+        //         }
+        //       })
+        //     }));
     }
 
     const handleAddFlashcard = () => {
         const newFlashcard : Flashcard= {
-            GUID: uuid.v4(),
-            question: 'Add a question',
-            answer: 'Add an answer'
+            id: 10000,
+            question: 'Add a questiontest',
+            answer: 'Add an answertest'
         };
-        console.log(newFlashcard);
         setFlashcardPack(prevFlashcardPack => {
             const updatedFlashcardPack = JSON.parse(JSON.stringify(prevFlashcardPack)); 
         
@@ -70,11 +80,11 @@ const editFlashcardPack = () => {
     }
 
     useEffect(() => {
-        if(flashcardPack!== null){
-            const toSaveFlashcardPack = JSON.parse(JSON.stringify(flashcardPack));
-            toSaveFlashcardPack.flashcards = toSaveFlashcardPack.flashcards.filter(flashcard => flashcard.GUID !== 0);
-        useSaveLocalFlashcardPack(toSaveFlashcardPack);
-        }
+        // if(flashcardPack!== null){
+        //     const toSaveFlashcardPack = JSON.parse(JSON.stringify(flashcardPack));
+        //     toSaveFlashcardPack.flashcards = toSaveFlashcardPack.flashcards.filter(flashcard => flashcard.GUID !== 0);
+        // useSaveLocalFlashcardPack(toSaveFlashcardPack);
+        // }
         
     }, [flashcardPack])
 

@@ -67,7 +67,7 @@ const SingleEditableFlashcard = (props : SingleFlashcardProps) => {
 
 
     useEffect(() => {
-        props.flashcard.GUID === 0 ? setIsEndFlashcard(true) : setIsEndFlashcard(false);
+        props.flashcard.question === "DummyQuestion" ? setIsEndFlashcard(true) : setIsEndFlashcard(false);
         setFlashcardQuestionText(props.flashcard.question);
         setFlaschardAnswerText(props.flashcard.answer);
 

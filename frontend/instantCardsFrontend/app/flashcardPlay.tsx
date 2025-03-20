@@ -13,24 +13,27 @@ import NextFlashcardButton from './NextFlashcardButton';
 import PreviousFlashcardButton from './PreviousFlashcardButton';
 
 const flashcardPlay = () => {
-    const flashcardPackGUID = useLocalSearchParams< any>();
+    const flashcardPackid = useLocalSearchParams< any>();
     const colorScheme = useColorScheme();
     const [currentFlashcard, setCurrentFlashcard] = useState<Flashcard | null>(null);
     const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState(0);
     const [flashcardPack, setFlashcardPack] = useState<FlashcardPack | null>(null);
 
-    const isFlashcardPack = (data: FlashcardPack | Error) => {
-        return !(data instanceof Error)
-    }
 
     useEffect(() => {
-        useFetchLocalFlashcardPack(flashcardPackGUID.GUID).then( result => {
-            if(isFlashcardPack(result)){
-                setFlashcardPack(result);
-            } else {
-                console.error("error has occured: " + result);
-            }
-        })
+        fetch(`http://localhost:8080/backend-1.0-SNAPSHOT/api/flashcardPack/${flashcardPackid.id}`)
+            .then(response => {
+                if(!response.ok){
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                setFlashcardPack(data);
+            })
+            .catch(Error => {
+                console.error(Error);
+            })
     },[])
         
     useEffect(() => {

@@ -19,10 +19,8 @@ export interface FlashcardPack {
     flashcards: Flashcard[]
 }
 
-export type FlashcardPackGUID = string;
-
 export interface FlashcardPackBasicInfo {
-    GUID: FlashcardPackGUID;
+    id: number;
     name: string;
 }
 
