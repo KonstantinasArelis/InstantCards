@@ -108,8 +108,29 @@ public class FlashcardPackEndpoints {
         } catch (Exception e) {
             e.printStackTrace(); // Log the exception for debugging
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error creating flashcardPack: " + e.getMessage())
+                    .entity("Error updating flashcardPack: " + e.getMessage())
                     .build();
         }
+    }
+
+    @DELETE
+    @Path("/delete/{id}")
+    @Transactional
+    public Response deleteFlashcardPack(@PathParam("id") Long id){
+        try {
+            FlashcardPack toBeDeletedFlashcardPack = em.find(FlashcardPack.class, id);
+            if(toBeDeletedFlashcardPack != null){
+                em.remove(toBeDeletedFlashcardPack);
+                return Response.noContent().build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // Log the exception for debugging
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error deleting flashcardPack: " + e.getMessage())
+                    .build();
+        }
+
     }
 }

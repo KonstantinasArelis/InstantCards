@@ -75,7 +75,7 @@ const SingleEditableFlashcard = (props : SingleFlashcardProps) => {
 
     useEffect(() => {
         props.handleFlashcardUpdate({
-            GUID: props.flashcard.GUID,
+            id: props.flashcard.id,
             question: flaschardQuestionText,
             answer: flaschardAnswerText
         });
@@ -131,7 +131,7 @@ const SingleEditableFlashcard = (props : SingleFlashcardProps) => {
 
                 <TouchableHighlight
                     style={styles.removeButton}
-                    onPress={() => props.handleDeleteFlashcard(props.flashcard.GUID)}
+                    onPress={() => props.handleDeleteFlashcard(props.flashcard.id)}
                     >
                         <AntDesign name="delete" size={24} color="white" />
                 </TouchableHighlight>

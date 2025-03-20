@@ -8,13 +8,13 @@ export type FlashcardGuid = string;
 export type FlashcardGuidList = FlashcardGuid[];
 
 export interface Flashcard {
-    GUID: FlashcardGuid;
+    id: FlashcardGuid;
     question: string;
     answer: string;
 }
 
 export interface FlashcardPack {
-    GUID: string;
+    id: string;
     name: string;
     flashcards: Flashcard[]
 }

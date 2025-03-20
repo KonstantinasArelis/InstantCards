@@ -1,13 +1,13 @@
 import { View, Text, StyleSheet, FlatList, Pressable, TouchableHighlight, Dimensions, TouchableWithoutFeedback} from 'react-native';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { useEffect, useState } from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import { Flashcard, FlashcardPack, FlashcardPackBasicInfoList } from '@/types/custom';
 import useFetchLocalFlashcardPackBasicInfoList from '@/hooks/useFetchLocalFlashcardPackBasicInfoList';
 import useSaveLocalFlashcardPack from '@/hooks/useSaveLocalFlashcardPack';
 import useSaveLocalFlashcardPackBasicInfoList from '@/hooks/useSaveLocalFlashcardPackBasicInfoList';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { useNavigation } from 'expo-router';
+import {useFocusEffect, useNavigation} from 'expo-router';
 import useRemoveLocalFlashcardPack from '@/hooks/useRemoveLocalFlashcardPack';
 import uuid from 'react-native-uuid';
 import * as ImagePicker from "expo-image-picker";
@@ -140,10 +140,21 @@ const flashcards = () => {
             })
     }
 
+    // when component is mounted
     useEffect(() => {
         fetchFlaschardPackList();
     }, [])
 
+    // when component is focused (Ex. navigating back from editing flashcards)
+    useFocusEffect(
+        useCallback(() => {
+            fetchFlaschardPackList();
+
+            return () => {
+                // do smth when screen is unfocused
+            }
+        }, [])
+    )
 
     if (!flashcardPackBasicInfoList) { 
         return <Text>Loading...</Text>;
