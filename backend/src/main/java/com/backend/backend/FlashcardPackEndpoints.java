@@ -1,6 +1,8 @@
 package com.backend.backend;
 
+import contracts.FlashcardDto;
 import contracts.FlashcardPackDto;
+import entities.Flashcard;
 import entities.FlashcardPack;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -72,6 +74,37 @@ public class FlashcardPackEndpoints {
             return Response.created(createdUri)
                     .entity(newFlashcardPackData)
                     .build();
+        } catch (Exception e) {
+            e.printStackTrace(); // Log the exception for debugging
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error creating flashcardPack: " + e.getMessage())
+                    .build();
+        }
+    }
+
+    @PUT
+    @Path("/update/{id}")
+    @Transactional
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateFlashcardPack(@PathParam("id") Long id, FlashcardPackDto updatedFlashcardPackDto) {
+        try {
+            FlashcardPack flashcardPack = em.find(FlashcardPack.class, id);
+            if(flashcardPack != null){
+                flashcardPack.getFlashcards().clear();
+                flashcardPack.setName(updatedFlashcardPackDto.getName());
+
+                for(FlashcardDto newFlashcardDto : updatedFlashcardPackDto.getFlashcards()){
+                    flashcardPack.getFlashcards().add(new Flashcard(newFlashcardDto, flashcardPack));
+                }
+                em.merge(flashcardPack);
+
+                URI updatedUri = URI.create("/api/flashcardPack/" + flashcardPack.getId());
+                return Response.created(updatedUri).entity(updatedFlashcardPackDto).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
         } catch (Exception e) {
             e.printStackTrace(); // Log the exception for debugging
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
