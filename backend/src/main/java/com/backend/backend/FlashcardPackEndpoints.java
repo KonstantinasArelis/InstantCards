@@ -4,29 +4,35 @@ import contracts.FlashcardDto;
 import contracts.FlashcardPackDto;
 import entities.Flashcard;
 import entities.FlashcardPack;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.MediaType;
+import lombok.Getter;
+import lombok.Setter;
+import persistance.FlashcardPackDAO;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.net.URI;
 
+@ApplicationScoped
 @Path("/flashcardPack")
 @Produces(MediaType.APPLICATION_JSON)
 public class FlashcardPackEndpoints {
-    @PersistenceContext(unitName = "myPersistenceUnit")
-    private EntityManager em;
+    //@PersistenceContext(unitName = "myPersistenceUnit")
+    @Inject
+    @Setter @Getter
+    private FlashcardPackDAO flashcardPackDAO;
 
     @GET
     @Path("/{id}")
     @Transactional
     public Response getFlashcardPack(@PathParam("id") Long id) {
         try{
-            FlashcardPack retrievedFlashcardPack = em.find(FlashcardPack.class, id);
+            FlashcardPack retrievedFlashcardPack = flashcardPackDAO.findById(id);
             if(retrievedFlashcardPack == null) {
                 return Response.status(Response.Status.NOT_FOUND).entity("\"Flashcard pack with id \" + id + \" not found\"").build();
             }
@@ -44,7 +50,7 @@ public class FlashcardPackEndpoints {
     @Transactional
     public Response getAllFlashcardPacks() {
         try {
-            List<FlashcardPack> allFlashcardPacks = em.createQuery("SELECT f FROM FlashcardPack f", FlashcardPack.class).getResultList();
+            List<FlashcardPack> allFlashcardPacks = flashcardPackDAO.getAllFlashcardPacks();
             List<FlashcardPackDto> allFlashcardPacksData = new ArrayList<>();
             for(FlashcardPack flashcardPack : allFlashcardPacks){
                 FlashcardPackDto flashcardPackData = new FlashcardPackDto(flashcardPack);
@@ -67,8 +73,7 @@ public class FlashcardPackEndpoints {
     public Response createFlashcardPack(FlashcardPackDto newFlashcardPackData) {
         try {
             FlashcardPack newFlashcardPack = new FlashcardPack(newFlashcardPackData);
-            em.persist(newFlashcardPack);
-            em.flush();
+            flashcardPackDAO.addFlashcardPack(newFlashcardPack);
 
             URI createdUri = URI.create("/api/flashcardPack/" + newFlashcardPackData.getId());
             return Response.created(createdUri)
@@ -89,7 +94,7 @@ public class FlashcardPackEndpoints {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateFlashcardPack(@PathParam("id") Long id, FlashcardPackDto updatedFlashcardPackDto) {
         try {
-            FlashcardPack flashcardPack = em.find(FlashcardPack.class, id);
+            FlashcardPack flashcardPack = flashcardPackDAO.findById(id);
             if(flashcardPack != null){
                 flashcardPack.getFlashcards().clear();
                 flashcardPack.setName(updatedFlashcardPackDto.getName());
@@ -97,7 +102,7 @@ public class FlashcardPackEndpoints {
                 for(FlashcardDto newFlashcardDto : updatedFlashcardPackDto.getFlashcards()){
                     flashcardPack.getFlashcards().add(new Flashcard(newFlashcardDto, flashcardPack));
                 }
-                em.merge(flashcardPack);
+                flashcardPackDAO.updateFlashcardPack(flashcardPack);
 
                 URI updatedUri = URI.create("/api/flashcardPack/" + flashcardPack.getId());
                 return Response.created(updatedUri).entity(updatedFlashcardPackDto).build();
@@ -118,9 +123,9 @@ public class FlashcardPackEndpoints {
     @Transactional
     public Response deleteFlashcardPack(@PathParam("id") Long id){
         try {
-            FlashcardPack toBeDeletedFlashcardPack = em.find(FlashcardPack.class, id);
+            FlashcardPack toBeDeletedFlashcardPack = flashcardPackDAO.findById(id);
             if(toBeDeletedFlashcardPack != null){
-                em.remove(toBeDeletedFlashcardPack);
+                flashcardPackDAO.deleteFlashcardPack(toBeDeletedFlashcardPack);
                 return Response.noContent().build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND).build();

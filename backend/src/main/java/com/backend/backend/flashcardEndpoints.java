@@ -3,29 +3,32 @@ package com.backend.backend;
 import contracts.FlashcardDto;
 import entities.Flashcard;
 import entities.FlashcardPack;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import persistance.FlashcardDAO;
+import persistance.FlashcardPackDAO;
 
 import java.net.URI;
 
 @Path("/flashcard")
 @Produces(MediaType.APPLICATION_JSON)
 public class flashcardEndpoints {
-
-    @PersistenceContext(unitName = "myPersistenceUnit")
-    private EntityManager em;
+    @Inject
+    private FlashcardDAO flashcardDAO;
+    @Inject
+    private FlashcardPackDAO flashcardPackDAO;
 
     @GET
     @Path("/{id}")
     @Transactional
     public Response getFlashcard(@PathParam("id") Long id){
-
         try {
-            Flashcard flashcard = em.find(Flashcard.class, id);
+            Flashcard flashcard = flashcardDAO.findById(id);
             if(flashcard == null){
                 return Response.status(Response.Status.NOT_FOUND).entity("\"Flashcard pack with id \" + id + \" not found\"").build();
             } else {
@@ -44,7 +47,7 @@ public class flashcardEndpoints {
     @Transactional
     public Response addFlashcard(FlashcardDto flashcardData) {
         try {
-            FlashcardPack retrievedFlashcardPack = em.find(FlashcardPack.class, flashcardData.getFlashcardPackId());
+            FlashcardPack retrievedFlashcardPack = flashcardPackDAO.findById(flashcardData.getFlashcardPackId());
             if(retrievedFlashcardPack == null){
                 return Response.status(Response.Status.NOT_FOUND).entity("Adding flashcard to flashcard pack not possible: Flashcard Pack with id " + flashcardData.getFlashcardPackId() + " was not found").build();
             }
@@ -52,8 +55,7 @@ public class flashcardEndpoints {
                     flashcardData.getQuestion(),
                     flashcardData.getAnswer(),
                     retrievedFlashcardPack);
-            em.persist(newFlashcard);
-            em.flush();
+            flashcardDAO.addFlashcard(newFlashcard);
 
             flashcardData.setFlashcardPackId(retrievedFlashcardPack.getId());
             flashcardData.setId(newFlashcard.getId());
