@@ -2,6 +2,8 @@ package com.backend.backend;
 
 import contracts.FlashcardListDto;
 import entities.FlashcardPack;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -10,14 +12,19 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import mybatis.dao.FlashcardpackMapper;
 
 import java.util.List;
 
+@ApplicationScoped
 @Path("/flashcardList")
 @Produces(MediaType.APPLICATION_JSON)
 public class flashcardList {
     @PersistenceContext(unitName = "myPersistenceUnit")
     private EntityManager em;
+
+    @Inject
+    private FlashcardpackMapper flashcardpackMapper;
 
     @GET
     @Path("/getList")
@@ -25,6 +32,7 @@ public class flashcardList {
     public Response getList(){
         try {
             List<FlashcardPack> packs = em.createQuery("SELECT f FROM FlashcardPack f", FlashcardPack.class).getResultList();
+            System.out.println(flashcardpackMapper.selectAll());
             FlashcardListDto data = new FlashcardListDto(packs);
             return Response.ok(data).build();
         } catch (Exception e) {

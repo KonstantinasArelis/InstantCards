@@ -4,6 +4,7 @@ import entities.FlashcardPack;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
+import mybatis.dao.FlashcardpackMapper;
 
 import java.util.List;
 
