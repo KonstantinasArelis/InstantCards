@@ -11,6 +11,7 @@ import java.io.IOException;
 
 @ApplicationScoped
 public class MyBatisResources {
+
     @Produces
     @ApplicationScoped
     @SessionFactoryProvider

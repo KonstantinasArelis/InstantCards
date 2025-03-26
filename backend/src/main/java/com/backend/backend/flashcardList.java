@@ -13,6 +13,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import mybatis.dao.FlashcardpackMapper;
+import services.FlashcardPackListService;
 
 import java.util.List;
 
@@ -20,20 +21,25 @@ import java.util.List;
 @Path("/flashcardList")
 @Produces(MediaType.APPLICATION_JSON)
 public class flashcardList {
-    @PersistenceContext(unitName = "myPersistenceUnit")
-    private EntityManager em;
+//    @PersistenceContext(unitName = "myPersistenceUnit")
+//    private EntityManager em;
+
+//    @Inject
+//    private FlashcardpackMapper flashcardpackMapper;
 
     @Inject
-    private FlashcardpackMapper flashcardpackMapper;
+    FlashcardPackListService service;
 
     @GET
     @Path("/getList")
     @Transactional
     public Response getList(){
         try {
-            List<FlashcardPack> packs = em.createQuery("SELECT f FROM FlashcardPack f", FlashcardPack.class).getResultList();
-            System.out.println(flashcardpackMapper.selectAll());
-            FlashcardListDto data = new FlashcardListDto(packs);
+            //List<FlashcardPack> packs = em.createQuery("SELECT f FROM FlashcardPack f", FlashcardPack.class).getResultList();
+            //System.out.println(flashcardpackMapper.selectAll());
+            //FlashcardListDto data = new FlashcardListDto(packs);
+
+            FlashcardListDto data = service.getFlashcardPackList();
             return Response.ok(data).build();
         } catch (Exception e) {
             e.printStackTrace(); // Log the exception for debugging
