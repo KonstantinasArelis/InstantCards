@@ -1,4 +1,4 @@
-package persistance;
+package com.instantCards.persistance;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;

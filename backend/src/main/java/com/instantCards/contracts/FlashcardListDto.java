@@ -1,6 +1,6 @@
-package contracts;
+package com.instantCards.contracts;
 
-import entities.FlashcardPack;
+import com.instantCards.entities.FlashcardPack;
 
 import java.util.ArrayList;
 import java.util.List;

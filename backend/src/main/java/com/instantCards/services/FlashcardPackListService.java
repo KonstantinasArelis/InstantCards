@@ -1,6 +1,6 @@
-package services;
+package com.instantCards.services;
 
-import contracts.FlashcardListDto;
+import com.instantCards.contracts.FlashcardListDto;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;

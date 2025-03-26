@@ -1,7 +1,6 @@
-package contracts;
+package com.instantCards.contracts;
 
-import entities.Flashcard;
-import entities.FlashcardPack;
+import com.instantCards.entities.Flashcard;
 import lombok.Getter;
 import lombok.Setter;
 

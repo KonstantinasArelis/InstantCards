@@ -1,8 +1,7 @@
-package entities;
+package com.instantCards.entities;
 
-import contracts.FlashcardDto;
-import contracts.FlashcardPackDto;
-import jakarta.annotation.Nullable;
+import com.instantCards.contracts.FlashcardDto;
+import com.instantCards.contracts.FlashcardPackDto;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;

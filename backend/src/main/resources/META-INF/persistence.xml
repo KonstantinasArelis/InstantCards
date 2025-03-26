@@ -7,9 +7,8 @@
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <jta-data-source>java:jboss/datasources/ExampleDS</jta-data-source>
 
-    <class>entities.TestEntity</class>
-    <class>entities.Flashcard</class>
-    <class>entities.FlashcardPack</class>
+    <class>com.instantCards.entities.Flashcard</class>
+    <class>com.instantCards.entities.FlashcardPack</class>
 
     <properties>
       <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>

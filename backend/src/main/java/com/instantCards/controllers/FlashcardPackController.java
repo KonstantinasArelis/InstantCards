@@ -1,9 +1,9 @@
-package com.backend.backend;
+package com.instantCards.controllers;
 
-import contracts.FlashcardDto;
-import contracts.FlashcardPackDto;
-import entities.Flashcard;
-import entities.FlashcardPack;
+import com.instantCards.contracts.FlashcardDto;
+import com.instantCards.contracts.FlashcardPackDto;
+import com.instantCards.entities.Flashcard;
+import com.instantCards.entities.FlashcardPack;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -12,7 +12,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.MediaType;
 import lombok.Getter;
 import lombok.Setter;
-import persistance.FlashcardPackDAO;
+import com.instantCards.persistance.FlashcardPackDAO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ import java.net.URI;
 @ApplicationScoped
 @Path("/flashcardPack")
 @Produces(MediaType.APPLICATION_JSON)
-public class FlashcardPackEndpoints {
+public class FlashcardPackController {
     //@PersistenceContext(unitName = "myPersistenceUnit")
     @Inject
     @Setter @Getter

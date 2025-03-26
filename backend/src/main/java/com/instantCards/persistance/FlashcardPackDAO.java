@@ -1,10 +1,9 @@
-package persistance;
+package com.instantCards.persistance;
 
-import entities.FlashcardPack;
+import com.instantCards.entities.FlashcardPack;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import mybatis.dao.FlashcardpackMapper;
 
 import java.util.List;
 

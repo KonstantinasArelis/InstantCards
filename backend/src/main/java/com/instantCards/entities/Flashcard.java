@@ -1,6 +1,6 @@
-package entities;
+package com.instantCards.entities;
 
-import contracts.FlashcardDto;
+import com.instantCards.contracts.FlashcardDto;
 import jakarta.persistence.*;
 
 @Entity

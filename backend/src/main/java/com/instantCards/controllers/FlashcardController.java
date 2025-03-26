@@ -1,23 +1,21 @@
-package com.backend.backend;
+package com.instantCards.controllers;
 
-import contracts.FlashcardDto;
-import entities.Flashcard;
-import entities.FlashcardPack;
+import com.instantCards.contracts.FlashcardDto;
+import com.instantCards.entities.Flashcard;
+import com.instantCards.entities.FlashcardPack;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import persistance.FlashcardDAO;
-import persistance.FlashcardPackDAO;
+import com.instantCards.persistance.FlashcardDAO;
+import com.instantCards.persistance.FlashcardPackDAO;
 
 import java.net.URI;
 
 @Path("/flashcard")
 @Produces(MediaType.APPLICATION_JSON)
-public class flashcardEndpoints {
+public class FlashcardController {
     @Inject
     private FlashcardDAO flashcardDAO;
     @Inject
