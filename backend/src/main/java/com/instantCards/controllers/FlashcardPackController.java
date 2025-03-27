@@ -61,7 +61,7 @@ public class FlashcardPackController {
             //TODO make sure user does not provide id when creating flashcard pack
             FlashcardPackDto createdFlashcardPack = flashcardPackService.createFlashcardPack(newFlashcardPackDto);
             URI locationUri = UriBuilder
-                    .fromResource(FlashcardPackDto.class)
+                    .fromResource(FlashcardPackController.class)
                     .path(String.valueOf(createdFlashcardPack.getId()))
                     .build();
 
