@@ -1,5 +1,6 @@
 package com.instantCards.persistance;
 
+import com.instantCards.contracts.IFlashcardPackDao;
 import com.instantCards.entities.FlashcardPack;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -8,7 +9,7 @@ import jakarta.persistence.EntityManager;
 import java.util.List;
 
 @ApplicationScoped
-public class FlashcardPackDAO {
+public class FlashcardPackDAO implements IFlashcardPackDao {
     @Inject
     private EntityManager em;
 
