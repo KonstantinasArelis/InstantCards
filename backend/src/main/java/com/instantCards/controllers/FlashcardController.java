@@ -42,7 +42,7 @@ public class FlashcardController {
     @POST
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Transactional
+
     public Response addFlashcard(FlashcardDto flashcardData) {
         try {
             FlashcardPack retrievedFlashcardPack = flashcardPackDAO.findById(flashcardData.getFlashcardPackId());

@@ -12,7 +12,7 @@ public class Flashcard {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String question;
 
-    @Column(nullable = false, columnDefinition = "Text")
+    @Column(nullable = false, columnDefinition = "Text", name = "test")
     private String answer;
 
     @ManyToOne
