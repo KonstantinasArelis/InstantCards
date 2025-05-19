@@ -14,7 +14,7 @@
         <jdbcConnection driverClass="org.postgresql.Driver"
                         connectionURL="jdbc:postgresql://localhost:5432/instantcardsbackenddb"
                         userId="postgres"
-                        password="your_new_password">
+                        password="root">
         </jdbcConnection>
 
         <javaModelGenerator targetPackage="mybatis.model" targetProject="src/main/java" />

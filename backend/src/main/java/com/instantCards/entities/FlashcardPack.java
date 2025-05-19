@@ -16,8 +16,14 @@ public class FlashcardPack {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String name;
 
-    @OneToMany(mappedBy = "flashcardPack", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "flashcardPack",
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE},
+            orphanRemoval = true,
+            fetch = FetchType.EAGER)
     private List<Flashcard> flashcards = new ArrayList<>();
+
+    @Version
+    private Long version;
 
     // Constructors
     public FlashcardPack() {
@@ -57,6 +63,10 @@ public class FlashcardPack {
     public void setFlashcards(List<Flashcard> flashcards){
         this.flashcards = flashcards;
     }
+
+    public Long getVersion(){return version;}
+
+    public void setVersion(Long version){this.version = version;}
 
     @Override
     public String toString() {

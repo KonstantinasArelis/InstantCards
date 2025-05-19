@@ -23,3 +23,9 @@ public class MyBatisResources {
         }
     }
 }
+
+// many to many
+// mybatis grafo navigavimas
+// application scopes, component
+// privalumai trukumai
+// transakciju keista tvarka

@@ -14,6 +14,8 @@ public class FlashcardPackDto {
     private Long id;
     private String name;
     private List<FlashcardDto> flashcards;
+    private Long version;
+    private boolean force;
 
     public FlashcardPackDto(){};
 

@@ -4,7 +4,9 @@ import com.instantCards.contracts.FlashcardPackDto;
 import com.instantCards.contracts.IFlashcardPackService;
 import com.instantCards.services.FlashcardPackService;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
@@ -15,7 +17,7 @@ import java.net.URI;
 
 // TODO instead of controllers returning error message, log them internally
 
-@ApplicationScoped
+@RequestScoped
 @Path("/flashcardPack")
 @Produces(MediaType.APPLICATION_JSON)
 public class FlashcardPackController {
@@ -88,10 +90,113 @@ public class FlashcardPackController {
             return Response.ok(updatedFlashcardPackDto).build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        }  catch (Exception e) {
+        } catch (OptimisticLockException e) {
+            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
+        }
+        catch (Exception e) {
             e.printStackTrace(); // Log the exception for debugging
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error updating flashcardPack: " + e.getMessage())
+                    .build();
+        }
+    }
+
+    @PUT
+    @Path("/timelyOperation/{id}")
+    @Transactional
+    public Response performTimelyOperation(@PathParam("id") Long id){
+        try {
+            flashcardPackService.performTimelyOperation(id);
+        } catch(OptimisticLockException e) { // Catches direct OLE
+            // Log e if necessary
+            return Response.status(Response.Status.CONFLICT)
+                    .entity("{\"error\":\"Conflict: Data has been modified by another user.\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        } catch (Exception e) { // Catches RollbackException or other exceptions
+            Throwable cause = e;
+            boolean isOptimisticLock = false;
+            while (cause != null) {
+                if (cause instanceof OptimisticLockException) {
+                    isOptimisticLock = true;
+                    break;
+                }
+                cause = cause.getCause();
+            }
+
+            if (isOptimisticLock) {
+                // Log e if necessary (it contains the full context)
+                return Response.status(Response.Status.CONFLICT)
+                        .entity("{\"error\":\"Conflict: Data has been modified by another user (detected during transaction commit).\"}")
+                        .type(MediaType.APPLICATION_JSON)
+                        .build();
+            } else {
+                e.printStackTrace(); // Log the full exception for debugging other types of errors
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"error\":\"Error updating flashcardPack: " + e.getMessage() + "\"}")
+                        .type(MediaType.APPLICATION_JSON)
+                        .build();
+            }
+        }
+
+        return Response.noContent().build();
+    }
+
+    @PUT
+    @Path("/timelyOperation/force/{id}")
+    @Transactional
+    public Response performTimelyOperationForce(@PathParam("id") Long id){
+        try {
+            flashcardPackService.performTimelyOperationForce(id);
+        } catch(OptimisticLockException e) { // Catches direct OLE
+            // Log e if necessary
+            return Response.status(Response.Status.CONFLICT)
+                    .entity("{\"error\":\"Conflict: Data has been modified by another user.\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        } catch (Exception e) { // Catches RollbackException or other exceptions
+            Throwable cause = e;
+            boolean isOptimisticLock = false;
+            while (cause != null) {
+                if (cause instanceof OptimisticLockException) {
+                    isOptimisticLock = true;
+                    break;
+                }
+                cause = cause.getCause();
+            }
+
+            if (isOptimisticLock) {
+                // Log e if necessary (it contains the full context)
+                return Response.status(Response.Status.CONFLICT)
+                        .entity("{\"error\":\"Conflict: Data has been modified by another user (detected during transaction commit).\"}")
+                        .type(MediaType.APPLICATION_JSON)
+                        .build();
+            } else {
+                e.printStackTrace(); // Log the full exception for debugging other types of errors
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"error\":\"Error updating flashcardPack: " + e.getMessage() + "\"}")
+                        .type(MediaType.APPLICATION_JSON)
+                        .build();
+            }
+        }
+
+        return Response.noContent().build();
+    }
+
+    @GET
+    @Path("/calculateCards")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response calculateFlashcards(){
+        try {
+            String result = flashcardPackService.calculateFlashcards();
+            return Response.ok()
+                    .entity(result)
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace(); // Log the exception for debugging
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error fetching all flashcardPacks: " + e.getMessage())
                     .build();
         }
     }

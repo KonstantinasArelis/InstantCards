@@ -3,20 +3,21 @@ declare module "*.png" {
     export default value;
 }
 
-export type FlashcardGuid = string;
-
-export type FlashcardGuidList = FlashcardGuid[];
-
 export interface Flashcard {
-    id: FlashcardGuid;
+    fakeId: string;
+    id?: number;
     question: string;
     answer: string;
+    version: number;
+    force?: boolean;
 }
 
 export interface FlashcardPack {
-    id: string;
+    id?: string;
     name: string;
-    flashcards: Flashcard[]
+    flashcards: Flashcard[];
+    version: number;
+    force?: boolean;
 }
 
 export interface FlashcardPackBasicInfo {
@@ -27,8 +28,12 @@ export interface FlashcardPackBasicInfo {
 export type  FlashcardPackBasicInfoList = FlashcardPackBasicInfo[];
 
 interface SingleFlashcardProps {
-    flashcard: Flashcard;
-    flashcardIndex: number;
+     scrollX: SharedValue<number>;
+     flashcard: Flashcard;
+     flashcardIndex: number;
+     handleFlashcardUpdate: (updatedFlashcard: Flashcard) => void;
+     handleAddFlashcard: () => void;
+     handleDeleteFlashcard: (flashcardFakeId: string) => void;
 }
 
 interface FlashcardPackGUIDFromRoute {

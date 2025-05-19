@@ -37,7 +37,6 @@ const SingleEditableFlashcard = (props : SingleFlashcardProps) => {
     const answerReanimatedStyle = useAnimatedStyle(() => {
         return {
             height: scale.value,
-
         };
     }, []);
 
@@ -64,20 +63,23 @@ const SingleEditableFlashcard = (props : SingleFlashcardProps) => {
             ]
         }
     })
-
+    useEffect(() => {
+        console.log(props.flashcard);
+    },[])
 
     useEffect(() => {
-        props.flashcard.question === "DummyQuestion" ? setIsEndFlashcard(true) : setIsEndFlashcard(false);
+        props.flashcard.fakeId === "LastCardPlaceHolder" ? setIsEndFlashcard(true) : setIsEndFlashcard(false);
         setFlashcardQuestionText(props.flashcard.question);
         setFlaschardAnswerText(props.flashcard.answer);
-
     }, [props.flashcard])
 
     useEffect(() => {
         props.handleFlashcardUpdate({
+            fakeId: props.flashcard.fakeId,
             id: props.flashcard.id,
             question: flaschardQuestionText,
-            answer: flaschardAnswerText
+            answer: flaschardAnswerText,
+            version: props.flashcard.version
         });
     }, [flaschardQuestionText, flaschardAnswerText])
 

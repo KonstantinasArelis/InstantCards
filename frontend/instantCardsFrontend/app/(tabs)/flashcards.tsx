@@ -1,4 +1,14 @@
-import { View, Text, StyleSheet, FlatList, Pressable, TouchableHighlight, Dimensions, TouchableWithoutFeedback} from 'react-native';
+import {
+    View,
+    Text,
+    StyleSheet,
+    FlatList,
+    Modal,
+    TouchableHighlight,
+    Dimensions,
+    TouchableWithoutFeedback,
+    Pressable
+} from 'react-native';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import {useCallback, useEffect, useState} from 'react';
@@ -29,6 +39,8 @@ const flashcards = () => {
     const [waitingForResponse, SetWaitingForResponse] = useState(false);
     const [response, SetResponse] = useState(null);
     const [errorGettingImageData, SetErrorGettingImageData] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [flashcardCount, setFlashcardCount] = useState("");
 
     useEffect( () => {
         SetErrorGettingImageData(false);
@@ -140,6 +152,22 @@ const flashcards = () => {
             })
     }
 
+    const fetchFlashcardCount = () => {
+        fetch(`http://localhost:8080/backend-1.0-SNAPSHOT/api/flashcardPack/calculateCards`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(data => {
+                setFlashcardCount(data);
+            })
+            .catch(error => {
+                console.error(error);
+            })
+    }
+
     // when component is mounted
     useEffect(() => {
         fetchFlaschardPackList();
@@ -162,6 +190,35 @@ const flashcards = () => {
 
     return (
             <View style={styles.container}>
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => {
+                        setModalVisible(!modalVisible);
+                    }}>
+                    <View style={styles.centeredView}>
+                        <View style={styles.modalView}>
+                            <Text style={styles.modalText}>{flashcardCount}</Text>
+                            <Pressable
+                                style={[styles.button, styles.buttonClose]}
+                                onPress={() => {
+                                    setModalVisible(!modalVisible);
+                                    setFlashcardCount("Loading...");
+                                }}>
+                                <Text style={styles.textStyle}>Hide Modal</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </Modal>
+                <Pressable
+                onPress={() => {
+                    fetchFlashcardCount();
+                    setModalVisible(true);
+                }}
+                >
+                    <Text>Count all flashcards</Text>
+                </Pressable>
                 {uploadOptions && (
                 <View style={styles.popupOverlay}>
                     <TouchableWithoutFeedback onPress={hideUploadOptions}>
@@ -285,7 +342,46 @@ const styles = StyleSheet.create({
         bottom: 0,
         backgroundColor: 'rgba(0, 0, 0, 0.5)', // Greyed-out color (adjust opacity as needed)
     },
-
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    button: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+    },
+    buttonOpen: {
+        backgroundColor: '#F194FF',
+    },
+    buttonClose: {
+        backgroundColor: '#2196F3',
+    },
+    textStyle: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: 'center',
+    },
 })
 
 export default flashcards;

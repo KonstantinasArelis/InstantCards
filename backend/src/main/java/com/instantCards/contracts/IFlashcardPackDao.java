@@ -4,6 +4,8 @@ import com.instantCards.entities.Flashcard;
 import com.instantCards.entities.FlashcardPack;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 public interface IFlashcardPackDao {
     public FlashcardPack findById(Long id);

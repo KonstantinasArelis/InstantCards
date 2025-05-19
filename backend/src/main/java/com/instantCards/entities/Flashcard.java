@@ -2,6 +2,7 @@ package com.instantCards.entities;
 
 import com.instantCards.contracts.FlashcardDto;
 import jakarta.persistence.*;
+import jakarta.persistence.Version;
 
 @Entity
 public class Flashcard {
@@ -18,6 +19,9 @@ public class Flashcard {
     @ManyToOne
     @JoinColumn(name = "flashcard_pack_id", nullable = false)
     private FlashcardPack flashcardPack;
+
+    @Version
+    private Long version;
 
     public Flashcard(){
     }
@@ -66,6 +70,10 @@ public class Flashcard {
     public void setFlashcardPack(FlashcardPack flashcardPack) {
         this.flashcardPack = flashcardPack;
     }
+
+    public Long getVersion(){return version;}
+
+    public void setVersion(Long version){this.version = version;}
 
     @Override
     public String toString() {
